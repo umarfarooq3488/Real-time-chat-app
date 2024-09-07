@@ -66,7 +66,7 @@ const Navbar = () => {
                 onClick={logout}
                 className="flex items-center px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg transition duration-300 shadow-md"
               >
-                Logout
+                Log out
               </button>
             )}
           </div>
