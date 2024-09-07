@@ -20,7 +20,6 @@ const ChatRoom = ({ scroll }) => {
     );
 
     const unsubscribe = onSnapshot(MyQuery, (snapshot) => {
-      console.log(snapshot.docs);
       const fetchMessages = snapshot.docs.map((doc) => ({
         messageId: doc.id,
         ...doc.data(),
