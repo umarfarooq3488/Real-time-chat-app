@@ -1,10 +1,21 @@
 import React from "react";
 import { auth } from "../config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { formatDate, formatTime } from "./FormatDateTime";
 
 const Message = ({ message, id }) => {
   const [user] = useAuthState(auth);
+
+  // format the date here
+  const formattedDate = message.createAt
+    ? new Date(message.createAt.seconds * 1000).toLocaleDateString()
+    : "";
+  const formattedTime = message.createAt
+    ? new Date(message.createAt.seconds * 1000).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })
+    : "";
 
   return (
     <div className={`flex ${id === user.uid ? "self-end" : ""}`}>
@@ -29,11 +40,9 @@ const Message = ({ message, id }) => {
               {message.name}
             </div>
             <div className="flex">
-              <span className="text-sm text-gray-200">
-                {formatDate(message.createAt)}
-              </span>
+              <span className="text-sm text-gray-200">{formattedDate}</span>
               <span className="text-sm mx-1 text-gray-200">
-                {formatTime(message.createAt)}
+                {formattedTime}
               </span>
             </div>
           </div>
