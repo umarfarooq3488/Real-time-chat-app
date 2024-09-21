@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { auth, dataBase } from "../config/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { useUser } from "../context/UserContext";
+import createConversationId from "./Private chat/SortingUserId";
 
 const SendMessage = ({ scroll }) => {
   const [message, setMessage] = useState("");
-
+  const { chatType, selectedUserId } = useUser();
   const sendMessage = async (e) => {
     e.preventDefault();
 
@@ -15,25 +17,42 @@ const SendMessage = ({ scroll }) => {
 
     const { displayName, uid, photoURL } = auth.currentUser;
 
-    await addDoc(collection(dataBase, "Messages"), {
-      text: message,
-      name: displayName,
-      avatar: photoURL,
-      createAt: serverTimestamp(),
-      id: uid,
-    });
+    if (chatType === "private") {
+      const conversationId = createConversationId(uid, selectedUserId);
+      await addDoc(
+        collection(dataBase, `PrivateMessages/${conversationId}/Messages`),
+        {
+          text: message,
+          name: displayName,
+          avatar: photoURL,
+          senderId: uid,
+          id: uid,
+          receiverId: selectedUserId,
+          createAt: serverTimestamp(),
+        }
+      );
+    } else {
+      await addDoc(collection(dataBase, "Messages"), {
+        text: message,
+        name: displayName,
+        avatar: photoURL,
+        createAt: serverTimestamp(),
+        id: uid,
+      });
+    }
+
     setMessage("");
     scroll.current.scrollIntoView({ behavior: "smooth" });
   };
   return (
     <div>
-      <div className="sendbox bg-gray-400 dark:bg-gray-800 p-5 absolute bottom-0 w-full">
+      <div className="sendbox bg-gray-300 dark:bg-gray-800 p-4">
         <form onSubmit={sendMessage} className="flex gap-2" action="">
           <input
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="w-full p-3"
+            className="w-full p-3 text-black"
             placeholder="Type a message..."
           />
           <button

@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import Message from "./Message";
-import { dataBase } from "../config/firebase";
+import { dataBase, auth } from "../config/firebase";
+import SendMessage from "./SendMessage";
+import { useUser } from "../context/UserContext";
+import createConversationId from "./Private chat/SortingUserId";
 import {
   collection,
   onSnapshot,
@@ -11,24 +14,46 @@ import {
 
 const ChatRoom = ({ scroll }) => {
   const [messages, setMessages] = useState([]);
+  const { chatType, selectedUserId } = useUser();
 
   useEffect(() => {
-    const MyQuery = query(
-      collection(dataBase, "Messages"),
-      orderBy("createAt", "asc"), // Order messages by creation time in ascending order
-      limit(50)
-    );
+    if (chatType === "private") {
+      const conversationId = createConversationId(
+        selectedUserId,
+        auth.currentUser.uid
+      );
+      const q = query(
+        collection(dataBase, `PrivateMessages/${conversationId}/Messages`),
+        orderBy("createAt", "asc"),
+        limit(50)
+      );
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const fetchMessages = snapshot.docs.map((doc) => ({
+          messageId: doc.id,
+          ...doc.data(),
+        }));
+        setMessages(fetchMessages);
 
-    const unsubscribe = onSnapshot(MyQuery, (snapshot) => {
-      const fetchMessages = snapshot.docs.map((doc) => ({
-        messageId: doc.id,
-        ...doc.data(),
-      }));
-      setMessages(fetchMessages); // Update state with fetched messages
-    });
+        return () => unsubscribe();
+      });
+    } else if (chatType === "group") {
+      const MyQuery = query(
+        collection(dataBase, "Messages"),
+        orderBy("createAt", "asc"), // Order messages by creation time in ascending order
+        limit(50)
+      );
 
-    return () => unsubscribe(); // Cleanup subscription on component unmount
-  }, []);
+      const unsubscribe = onSnapshot(MyQuery, (snapshot) => {
+        const fetchMessages = snapshot.docs.map((doc) => ({
+          messageId: doc.id,
+          ...doc.data(),
+        }));
+        setMessages(fetchMessages); // Update state with fetched messages
+      });
+
+      return () => unsubscribe && unsubscribe(); // Cleanup subscription on component unmount
+    }
+  }, [chatType, selectedUserId]);
 
   useEffect(() => {
     if (scroll.current) {
@@ -37,11 +62,14 @@ const ChatRoom = ({ scroll }) => {
   }, [messages]);
 
   return (
-    <div className="dark:bg-gray-900 bg-gray-200 gap-3 overflow-auto flex-col flex h-[80vh] p-2 py-10 md:p-7">
-      {messages.map((msg) => (
-        <Message key={msg.messageId} id={msg.id} message={msg} />
-      ))}
-      <span ref={scroll}></span>
+    <div>
+      <div className="dark:bg-gray-900 bg-gray-200 gap-3 overflow-auto flex-col flex h-[78vh] xl:h-[80vh] p-2 py-10 md:p-7">
+        {messages.map((msg) => (
+          <Message key={msg.messageId} id={msg.id} message={msg} />
+        ))}
+        <span ref={scroll}></span>
+      </div>
+      <SendMessage scroll={scroll} />
     </div>
   );
 };

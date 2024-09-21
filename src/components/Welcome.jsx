@@ -16,10 +16,11 @@ const Welcome = () => {
       <Navbar />
       <section className="flex flex-col justify-center h-[90.5%] items-center bg-gray-200 text-black dark:bg-gray-900 dark:text-white p-4 sm:p-8">
         <h1 className="text-4xl font-bold mb-4 text-teal-600 dark:text-teal-400">
-          Welcome to My Simple Chat App!
+          Join LinkLine: Your Hub for Seamless Conversations!
         </h1>
         <p className="text-lg mb-6 text-gray-800 dark:text-gray-300">
-          This is a simple chat app built using React.
+          Link, chat, and share with just a tap. Join now and start connecting
+          instantly!
         </p>
         <img
           src={reactLogo}
@@ -33,7 +34,7 @@ const Welcome = () => {
         {/* Login form */}
         <div
           onClick={signInGoogle}
-          className="login flex items-center border border-teal-400 rounded-lg px-6 py-3 cursor-pointer hover:bg-teal-500 hover:text-gray-900 animate-bounce transition duration-300"
+          className="login flex items-center border border-teal-400 rounded-lg px-6 py-3 cursor-pointer hover:bg-teal-500 hover:text-gray-900 animate-bounce transition duration-1000"
         >
           <span className="mr-1 text-md sm:text-lg font-medium">
             Continue with Google
