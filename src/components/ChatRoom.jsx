@@ -62,15 +62,24 @@ const ChatRoom = ({ scroll }) => {
   }, [messages]);
 
   return (
-    <div>
-      <div className="dark:bg-gray-900 bg-gray-200 gap-3 overflow-auto flex-col flex h-[78vh] xl:h-[80vh] p-2 py-10 md:p-7">
-        {messages.map((msg) => (
-          <Message key={msg.messageId} id={msg.id} message={msg} />
-        ))}
-        <span ref={scroll}></span>
-      </div>
-      <SendMessage scroll={scroll} />
-    </div>
+    <>
+      {chatType !== null ? (
+        <div>
+          <div className="dark:bg-gray-900 bg-gray-200 gap-3 overflow-auto flex-col flex h-[78vh] xl:h-[80vh] p-2 py-10 md:p-7">
+            {messages.map((msg) => (
+              <Message key={msg.messageId} id={msg.id} message={msg} />
+            ))}
+            <span ref={scroll}></span>
+          </div>
+          <SendMessage scroll={scroll} />
+        </div>
+      ) : (
+        // <div className="h-[90vh] ">sm</div>
+        <div className="flex bg-gray-200 justify-center h-[89vh] font-thin items-center text-4xl lg:text-8xl text-gray-400 ">
+          Message Now
+        </div>
+      )}
+    </>
   );
 };
 

@@ -39,7 +39,7 @@ const User_sidebar = ({ setShowSideBar }) => {
     setShowSideBar(false);
   };
   return (
-    <div className="h-[90vh] overflow-auto duration-500 w-[90%] md:w-[100%] transition-all bg-gray-200 text-gray-600 dark:bg-gray-900 dark:text-teal-400 md:h-[90vh] md:relative absolute">
+    <div className="h-[90vh] overflow-auto duration-500 w-[87%] md:w-[100%] transition-all bg-gray-200 text-gray-600 dark:bg-gray-900 dark:text-teal-400 md:h-[90vh] md:relative absolute">
       <div className=" cursor-pointer h-full border-r-4 p-3 border-gray-400">
         <div className="box flex flex-col">
           <div className="top text-xl font-bold p-3">Chats</div>
@@ -47,12 +47,12 @@ const User_sidebar = ({ setShowSideBar }) => {
             <div>
               <div
                 onClick={selectGroup}
-                className="box flex gap-3 dark:hover:bg-gray-600 hover:bg-[#c4c4c4] rounded-md dark:bg-gray-700 bg-gray-300 p-4"
+                className="box overflow-hidden flex gap-3 dark:hover:bg-gray-600 hover:bg-[#c4c4c4] rounded-md dark:bg-gray-700 bg-gray-300 p-4"
               >
-                <img src={Groupdp} className="rounded-full w-12" alt="" />
+                <img src={Groupdp} className="rounded-full w-10" alt="" />
                 <div className="info flex flex-col">
                   <h3 className="font-bold text-lg">Public Group</h3>
-                  <p className="text-sm dark:text-gray-300">
+                  <p className="text-sm text-nowrap dark:text-gray-300">
                     Anyone can see you messages
                   </p>
                 </div>

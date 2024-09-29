@@ -10,6 +10,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { dataBase } from "./config/firebase";
+import OneSignal from "react-onesignal";
 
 const ChatBox = lazy(() => import("./components/ChatBox"));
 const Welcome = lazy(() => import("./components/Welcome"));
@@ -21,12 +22,25 @@ import { UserProvider } from "./context/UserContext";
 function App() {
   const [themeMode, setThemeMode] = useState("light");
   const [user] = useAuthState(auth);
-  // const [User, setUser] = useState([]);
+  const [userToSave, setUserToSave] = useState(false);
 
   // functions to toggle the theme
   const toggleTheme = () => {
     setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
   };
+
+  // useEffect(() => {
+  //   const oneSignalInitialize = async () => {
+  //     await OneSignal.init({
+  //       appId: "01163343-b315-4598-a898-5cbd1e421eac", // Your OneSignal App ID
+  //       safari_web_id:
+  //         "web.onesignal.auto.064b44a8-1dd7-4e10-9d87-452ef5b9c9dd",
+  //       notifyButton: { enable: true },
+  //     });
+  //   };
+  //   oneSignalInitialize();
+  // }, []);
+
   // Set the class in the html using useEffect
   useEffect(() => {
     document.querySelector("html").classList.remove("dark", "light");
@@ -54,13 +68,14 @@ function App() {
         );
 
         if (!userFound) {
-          SaveUserData(); // Only save user if they are not already in the database
+          setUserToSave(true); // Trigger saving the user
         }
       });
 
       return () => unsubscribe(); // Cleanup on component unmount
     }
   }, [user]);
+
   const MemorizedValues = useMemo(
     () => ({
       themeMode,
@@ -69,6 +84,15 @@ function App() {
     [themeMode]
   );
 
+  const handleSaveComplete = (success) => {
+    if (success) {
+      console.log("User save process completed successfully.");
+      setUserToSave(false); // Reset after successful save
+    } else {
+      console.error("User save process failed.");
+    }
+  };
+
   return (
     <>
       <UserProvider>
@@ -76,6 +100,9 @@ function App() {
           <Suspense fallback={<div>Loading...</div>}>
             <div className="bg-gray-300 dark:bg-gray-800 h-screen">
               {user ? <ChatBox /> : <Welcome />}
+              {userToSave && (
+                <SaveUserData onSaveComplete={handleSaveComplete} />
+              )}
             </div>
           </Suspense>
         </ThemeProvider>

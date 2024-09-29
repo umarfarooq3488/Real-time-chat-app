@@ -1,12 +1,20 @@
 import React, { useState } from "react";
 import { auth, dataBase } from "../config/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { useUser } from "../context/UserContext";
 import createConversationId from "./Private chat/SortingUserId";
+import sendNotification from "@/services/NotificationService";
 
 const SendMessage = ({ scroll }) => {
   const [message, setMessage] = useState("");
   const { chatType, selectedUserId } = useUser();
+
   const sendMessage = async (e) => {
     e.preventDefault();
 
@@ -18,6 +26,7 @@ const SendMessage = ({ scroll }) => {
     const { displayName, uid, photoURL } = auth.currentUser;
 
     if (chatType === "private") {
+      // Private chat: create conversation ID using user IDs
       const conversationId = createConversationId(uid, selectedUserId);
       await addDoc(
         collection(dataBase, `PrivateMessages/${conversationId}/Messages`),
@@ -31,7 +40,20 @@ const SendMessage = ({ scroll }) => {
           createAt: serverTimestamp(),
         }
       );
+
+      // Retrieve the receiver's Player ID from Firestore
+      const receiverDoc = await getDoc(doc(dataBase, "Users", selectedUserId));
+      const receiverPlayerId = receiverDoc.data().playerId;
+
+      // Send a notification to the receiver if their Player ID exists
+      if (receiverPlayerId) {
+        sendNotification(
+          receiverPlayerId,
+          `New message from ${displayName}: ${message}`
+        );
+      }
     } else {
+      // Group chat: send message to the "Messages" collection
       await addDoc(collection(dataBase, "Messages"), {
         text: message,
         name: displayName,
@@ -39,11 +61,25 @@ const SendMessage = ({ scroll }) => {
         createAt: serverTimestamp(),
         id: uid,
       });
+
+      // Get all users in the group chat to send notifications
+      const usersSnapshot = await getDocs(collection(dataBase, "Users"));
+      usersSnapshot.forEach((userDoc) => {
+        const user = userDoc.data();
+        if (user.playerId && user.uid !== uid) {
+          // Avoid sending notifications to the sender
+          sendNotification(
+            user.playerId,
+            `New message in group chat from ${displayName}: ${message}`
+          );
+        }
+      });
     }
 
     setMessage("");
     scroll.current.scrollIntoView({ behavior: "smooth" });
   };
+
   return (
     <div>
       <div className="sendbox bg-gray-300 dark:bg-gray-800 p-4">
