@@ -18,8 +18,6 @@ const Welcome = lazy(() => import("./components/Welcome"));
 // import the contextProvider
 import { ThemeProvider } from "./context/ThemeContext";
 import { UserProvider } from "./context/UserContext";
-import sendNotification from "./services/NotificationService";
-import { getNotificationPermission } from "./Notification manager/NotificationManager";
 
 function App() {
   const [themeMode, setThemeMode] = useState("light");
@@ -30,10 +28,6 @@ function App() {
   const toggleTheme = () => {
     setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
   };
-  useEffect(() => {
-    sendNotification();
-    getNotificationPermission();
-  }, []);
 
   // Set the class in the html using useEffect
   useEffect(() => {
