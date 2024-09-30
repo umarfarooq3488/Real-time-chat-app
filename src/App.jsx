@@ -18,6 +18,8 @@ const Welcome = lazy(() => import("./components/Welcome"));
 // import the contextProvider
 import { ThemeProvider } from "./context/ThemeContext";
 import { UserProvider } from "./context/UserContext";
+import sendNotification from "./services/NotificationService";
+import { getNotificationPermission } from "./Notification manager/NotificationManager";
 
 function App() {
   const [themeMode, setThemeMode] = useState("light");
@@ -28,18 +30,10 @@ function App() {
   const toggleTheme = () => {
     setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
   };
-
-  // useEffect(() => {
-  //   const oneSignalInitialize = async () => {
-  //     await OneSignal.init({
-  //       appId: "01163343-b315-4598-a898-5cbd1e421eac", // Your OneSignal App ID
-  //       safari_web_id:
-  //         "web.onesignal.auto.064b44a8-1dd7-4e10-9d87-452ef5b9c9dd",
-  //       notifyButton: { enable: true },
-  //     });
-  //   };
-  //   oneSignalInitialize();
-  // }, []);
+  useEffect(() => {
+    sendNotification();
+    getNotificationPermission();
+  }, [third]);
 
   // Set the class in the html using useEffect
   useEffect(() => {

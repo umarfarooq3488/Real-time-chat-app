@@ -6,6 +6,6 @@ importScripts('https://cdn.onesignal.com/sdks/OneSignalSDKWorker.js');
 self.addEventListener('notificationclick', function (event) {
     event.notification.close();
     event.waitUntil(
-        clients.openWindow('https://yourwebsite.com') // Adjust the URL
+        clients.openWindow('https://linkline.netlify.app') // Adjust the URL
     );
 });
