@@ -68,7 +68,10 @@ function App() {
         );
 
         if (!userFound) {
-          setUserToSave(true); // Trigger saving the user
+          if (auth.currentUser) {
+            setUserToSave(true); // Trigger saving the user
+            console.log("set User to save is true");
+          }
         }
       });
 
