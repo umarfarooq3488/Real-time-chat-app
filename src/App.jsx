@@ -33,7 +33,7 @@ function App() {
   useEffect(() => {
     sendNotification();
     getNotificationPermission();
-  }, [third]);
+  }, []);
 
   // Set the class in the html using useEffect
   useEffect(() => {
