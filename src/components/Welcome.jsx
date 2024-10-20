@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "./Navbar";
-import reactLogo from "../assets/react.svg";
+import WhatsappImg from "./whatsapp.png";
 import GoogleImg from "./newGoogle.png";
 import { auth } from "../config/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
@@ -23,7 +23,7 @@ const Welcome = () => {
           instantly!
         </p>
         <img
-          src={reactLogo}
+          src={WhatsappImg}
           alt="React Logo"
           className="w-32 h-32 mb-6 animate-pulse"
         />

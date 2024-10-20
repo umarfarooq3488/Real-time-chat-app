@@ -39,7 +39,7 @@ const User_sidebar = ({ setShowSideBar }) => {
     setShowSideBar(false);
   };
   return (
-    <div className="h-[90vh] overflow-auto duration-500 w-[87%] md:w-[100%] transition-all bg-gray-200 text-gray-600 dark:bg-gray-900 dark:text-teal-400 md:h-[90vh] md:relative absolute">
+    <div className="h-[90vh] z-50 overflow-auto duration-500 w-[87%] md:w-[100%] transition-all bg-gray-200 text-gray-600 dark:bg-gray-900 dark:text-teal-400 md:h-[90vh] md:relative absolute">
       <div className=" cursor-pointer h-full border-r-4 p-3 border-gray-400">
         <div className="box flex flex-col">
           <div className="top text-xl font-bold p-3">Chats</div>

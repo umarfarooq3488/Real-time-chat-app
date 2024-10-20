@@ -50,8 +50,21 @@ const SideIcons = ({ setShowSideBar }) => {
           </PopoverTrigger>
           <PopoverContent
             side="top"
-            className="flex gap-1 flex-col w-[200px] mx-3"
+            className="flex overflow-hidden text-wrap gap-1 flex-col w-[300px] mx-3"
           >
+            <div className="userInfo mb-10">
+              <img
+                src={auth.currentUser.photoURL}
+                alt="Google"
+                className="w-10 mx-auto cursor-pointer rounded-full"
+              />
+              <div className="name text-center text-lg font-bold">
+                {auth.currentUser.displayName}
+              </div>
+              <div className="email text-center text-wrap">
+                {auth.currentUser.email}
+              </div>
+            </div>
             <button
               onClick={logout}
               className="border p-2 transition-all duration-500 hover:bg-teal-600 font-medium"

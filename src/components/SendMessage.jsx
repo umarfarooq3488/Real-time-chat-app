@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { auth, dataBase } from "../config/firebase";
+import { LiaArrowCircleUpSolid } from "react-icons/lia";
 import {
   collection,
   addDoc,
@@ -93,9 +94,9 @@ const SendMessage = ({ scroll }) => {
           />
           <button
             type="submit"
-            className="px-5 text-white text-lg font-semibold rounded-lg py-1 bg-teal-600"
+            className="px-3 text-white text-lg font-semibold rounded-lg py-1 bg-teal-600"
           >
-            Send
+            <LiaArrowCircleUpSolid className="hover:rotate-[360deg] transition-all duration-700 text-4xl" />
           </button>
         </form>
       </div>

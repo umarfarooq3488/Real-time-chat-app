@@ -43,7 +43,7 @@ const Navbar = () => {
                 onClick={GoogleSignIn}
                 className="flex items-center text-lg px-4 py-2 bg-teal-500 hover:bg-teal-600 text-black rounded-lg transition duration-300 shadow-md"
               >
-                <span className="mr-2 text-sm sm:text-lg">
+                <span className="mr-2 text-gray-100 text-sm sm:text-lg">
                   Login with Google
                 </span>
                 <img
@@ -55,7 +55,7 @@ const Navbar = () => {
             ) : (
               <button
                 onClick={logout}
-                className="flex items-center px-4 py-2 border-teal-600 border-2 hover:bg-teal-600 text-black dark:text-white rounded-lg transition duration-300 shadow-md"
+                className="flex items-center px-4 py-2 border-teal-600 border-2 hover:text-gray-100 hover:scale-[.9] hover:bg-teal-600 text-black dark:text-white rounded-lg transition duration-300 shadow-md"
               >
                 Log out
               </button>

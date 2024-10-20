@@ -1,6 +1,8 @@
 import React from "react";
 import { auth } from "../config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { MdArrowOutward } from "react-icons/md";
+import { FiArrowDownRight } from "react-icons/fi";
 
 const Message = ({ message, id }) => {
   const [user] = useAuthState(auth);
@@ -30,7 +32,7 @@ const Message = ({ message, id }) => {
             : "hover:bg-gray-900 dark:hover:bg-gray-800 bg-gray-800"
         } text-white p-5 pr-10 pt-2 flex gap-3 rounded-lg max-w-[500px]`}
       >
-        <div className="info flex flex-col">
+        <div className="info relative flex flex-col">
           <div className="flex sm:flex-row flex-col sm:items-center sm:gap-2">
             <div
               className={`name font-bold text-lg ${
@@ -47,6 +49,19 @@ const Message = ({ message, id }) => {
             </div>
           </div>
           <div className="message">{message.text}</div>
+          {id === user.uid ? (
+            <div
+              className={`text-gray-300 absolute -bottom-3 -right-5 text-sm`}
+            >
+              <MdArrowOutward className="text-lg" />
+            </div>
+          ) : (
+            <div
+              className={`text-gray-300 absolute -bottom-3 -right-5 text-sm`}
+            >
+              <FiArrowDownRight className="text-lg" />
+            </div>
+          )}
         </div>
       </div>
     </div>
