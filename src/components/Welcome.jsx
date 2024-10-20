@@ -39,7 +39,7 @@ const Welcome = () => {
           <span className="mr-1 text-md sm:text-lg font-medium">
             Continue with Google
           </span>
-          <img src={GoogleImg} className="w-8" alt="Google Icon" />
+          <img src={GoogleImg} className="w-7" alt="Google Icon" />
         </div>
       </section>
     </div>
