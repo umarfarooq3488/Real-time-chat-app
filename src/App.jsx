@@ -10,7 +10,6 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { dataBase } from "./config/firebase";
-import OneSignal from "react-onesignal";
 
 const ChatBox = lazy(() => import("./components/ChatBox"));
 const Welcome = lazy(() => import("./components/Welcome"));
