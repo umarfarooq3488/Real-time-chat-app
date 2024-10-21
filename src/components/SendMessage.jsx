@@ -63,7 +63,7 @@ const SendMessage = ({ scroll }) => {
             type="text"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            className="w-full p-3 text-black"
+            className="w-full dark:bg-gray-600 dark:text-gray-100 p-3 text-black"
             placeholder="Type a message..."
           />
           <button

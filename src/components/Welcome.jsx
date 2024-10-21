@@ -37,9 +37,8 @@ const Welcome = () => {
           className="login flex items-center border border-teal-400 rounded-lg px-6 py-3 cursor-pointer hover:bg-teal-500 hover:text-gray-900 animate-bounce transition duration-1000"
         >
           <span className="mr-1 text-md sm:text-lg font-medium">
-            Continue with Google
+            Start Conversation Now
           </span>
-          <img src={GoogleImg} className="w-7" alt="Google Icon" />
         </div>
       </section>
     </div>

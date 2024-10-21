@@ -75,7 +75,7 @@ const ChatRoom = ({ scroll }) => {
         </div>
       ) : (
         // <div className="h-[90vh] ">sm</div>
-        <div className="flex bg-gray-200 justify-center h-[89vh] font-thin items-center text-4xl lg:text-8xl text-gray-400 ">
+        <div className="flex dark:bg-gray-900 bg-gray-200 justify-center h-[89vh] font-thin items-center text-4xl lg:text-8xl text-gray-400 ">
           Message Now
         </div>
       )}
