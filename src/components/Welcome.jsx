@@ -1,9 +1,10 @@
 import React from "react";
 import Navbar from "./Navbar";
 import WhatsappImg from "./whatsapp.png";
-import GoogleImg from "./newGoogle.png";
+import BackgroundImg from "./background.jpeg";
 import { auth } from "../config/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { MessageCircle, ArrowRight } from "lucide-react";
 
 const signInGoogle = () => {
   const provide = new GoogleAuthProvider();
@@ -12,37 +13,119 @@ const signInGoogle = () => {
 
 const Welcome = () => {
   return (
-    <div className="text-white h-screen">
-      <Navbar />
-      <section className="flex flex-col justify-center h-[90.5%] items-center bg-gray-200 text-black dark:bg-gray-900 dark:text-white p-4 sm:p-8">
-        <h1 className="text-4xl font-bold mb-4 text-teal-600 dark:text-teal-400">
-          Join LinkLine: Your Hub for Seamless Conversations!
-        </h1>
-        <p className="text-lg mb-6 text-gray-800 dark:text-gray-300">
-          Link, chat, and share with just a tap. Join now and start connecting
-          instantly!
-        </p>
+    <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+      {/* Gradient overlay on background */}
+      <div className="fixed inset-0 z-0">
         <img
-          src={WhatsappImg}
-          alt="React Logo"
-          className="w-32 h-32 mb-6 animate-pulse"
+          src={BackgroundImg}
+          alt="background"
+          className="w-full h-full object-cover"
         />
-        <small className="mb-8 text-sm text-gray-700 dark:text-gray-500">
-          You need to login to start the chat below.
-        </small>
+        <div className="absolute inset-0 bg-gradient-to-br from-white/95 via-gray-100/90 to-gray-200/95 dark:from-gray-900/95 dark:via-slate-900/90 dark:to-slate-800/95" />
+      </div>
 
-        {/* Login form */}
-        <div
-          onClick={signInGoogle}
-          className="login flex items-center border border-teal-400 rounded-lg px-6 py-3 cursor-pointer hover:bg-teal-500 hover:text-gray-900 animate-bounce transition duration-1000"
-        >
-          <span className="mr-1 text-md sm:text-lg font-medium">
-            Start Conversation Now
-          </span>
+      {/* Subtle animated background shapes */}
+      <div className="fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-sky-600 rounded-full mix-blend-multiply filter blur-3xl opacity-5 dark:opacity-10 animate-blob" />
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-5 dark:opacity-10 animate-blob animation-delay-2000" />
+        <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-5 dark:opacity-10 animate-blob animation-delay-4000" />
+      </div>
+
+      {/* Navbar */}
+      <div className="relative z-20">
+        <Navbar />
+      </div>
+
+      {/* Content section */}
+      <section className="relative z-10 flex-1 flex flex-col justify-center items-center p-4 sm:p-8">
+        <div className="max-w-4xl w-full backdrop-blur-lg bg-white/80 dark:bg-slate-900/40 p-8 rounded-2xl shadow-lg dark:shadow-2xl border border-gray-200 dark:border-slate-700/50">
+          <div className="flex flex-col items-center space-y-8">
+            {/* Header Section */}
+            <div className="text-center space-y-4">
+              <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
+                Join LinkLine
+              </h1>
+              <p className="text-2xl font-light text-gray-600 dark:text-slate-300">
+                Your Hub for Seamless Conversations!
+              </p>
+            </div>
+
+            {/* Features Section */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full my-8">
+              <div className="bg-white/80 dark:bg-slate-800/50 p-4 rounded-xl backdrop-blur-sm border border-gray-200 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/70 transition">
+                <h3 className="text-sky-600 dark:text-sky-400 font-semibold mb-2">
+                  Instant Connect
+                </h3>
+                <p className="text-gray-600 dark:text-slate-300 text-sm">
+                  Link and chat with friends instantly
+                </p>
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800/50 p-4 rounded-xl backdrop-blur-sm border border-gray-200 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/70 transition">
+                <h3 className="text-blue-600 dark:text-blue-400 font-semibold mb-2">
+                  Secure Chat
+                </h3>
+                <p className="text-gray-600 dark:text-slate-300 text-sm">
+                  Your conversations, always protected
+                </p>
+              </div>
+              <div className="bg-white/80 dark:bg-slate-800/50 p-4 rounded-xl backdrop-blur-sm border border-gray-200 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/70 transition">
+                <h3 className="text-indigo-600 dark:text-indigo-400 font-semibold mb-2">
+                  Easy Sharing
+                </h3>
+                <p className="text-gray-600 dark:text-slate-300 text-sm">
+                  Share media with a single tap
+                </p>
+              </div>
+            </div>
+
+            {/* App Logo */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full blur-2xl opacity-10 dark:opacity-20"></div>
+              <img
+                src={WhatsappImg}
+                alt="React Logo"
+                className="w-24 h-24 relative animate-pulse"
+              />
+            </div>
+
+            {/* Login Button */}
+            <div
+              onClick={signInGoogle}
+              className="group relative px-8 py-4 cursor-pointer overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-300 ease-out hover:scale-105 hover:from-blue-500 hover:to-indigo-500 active:scale-95"
+            >
+              <div className="relative flex items-center space-x-4">
+                <span className="text-white font-semibold text-sm sm:text-lg">
+                  Start Chatting Now
+                </span>
+                <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform" />
+              </div>
+            </div>
+
+            <small className="text-gray-500 dark:text-slate-400 text-center">
+              Sign in securely with your Google account to begin
+            </small>
+          </div>
         </div>
       </section>
     </div>
   );
 };
+
+// Add these CSS keyframes to your global CSS file
+const style = document.createElement("style");
+style.textContent = `
+  @keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0px, 0px) scale(1); }
+  }
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+`;
+document.head.appendChild(style);
 
 export default Welcome;

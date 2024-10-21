@@ -27,7 +27,7 @@ const Navbar = () => {
         <div className="logo">
           <a
             href="#"
-            className="text-2xl font-bold text-teal-600 dark:text-teal-400 hover:text-teal-700 transition duration-300"
+            className="text-2xl font-bold  text-blue-600 dark:text-blue-400 hover:text-teal-700 transition duration-300"
           >
             LinkLine
           </a>
@@ -41,10 +41,11 @@ const Navbar = () => {
             {!user ? (
               <button
                 onClick={GoogleSignIn}
-                className="flex items-center text-lg px-4 py-2 bg-teal-500 hover:bg-teal-600 text-black rounded-lg transition duration-300 shadow-md"
+                className="flex items-center text-lg px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600  text-black rounded-lg transition duration-300 shadow-md"
               >
                 <span className="mr-2 text-gray-100 text-sm sm:text-lg">
-                  Login with Google
+                  Login{" "}
+                  <span className="hidden sm:inline-block"> with Google </span>
                 </span>
                 <img
                   src={GoogleImg}
