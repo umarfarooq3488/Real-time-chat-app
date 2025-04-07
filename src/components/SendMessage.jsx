@@ -57,20 +57,39 @@ const SendMessage = ({ scroll }) => {
 
   return (
     <div>
-      <div className="sendbox bg-gray-300 dark:bg-gray-800 p-4">
-        <form onSubmit={sendMessage} className="flex gap-2" action="">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="w-full dark:bg-gray-600 dark:text-gray-100 p-3 text-black"
-            placeholder="Type a message..."
-          />
+      <div className="sendbox bg-gray-300 h-[80px] max-w-[100%] md:max-w-[80%] lg:max-w-full dark:bg-gray-800 p-4">
+        <form
+          onSubmit={sendMessage}
+          className="flex items-center gap-2"
+          action=""
+        >
+          <div className="relative w-full">
+            <textarea
+              type="text"
+              value={message}
+              style={{
+                whiteSpace: "pre-wrap",
+                maxHeight: "400px",
+                minHeight: "20px",
+                position: "relative",
+                bottom: 0,
+              }}
+              onChange={(e) => setMessage(e.target.value)}
+              className="w-full min-h-[50px] dark:bg-gray-600 dark:text-gray-100 p-3 text-black 
+                       overflow-y-auto resize-none font-mono whitespace-pre-wrap"
+              placeholder="Type a message..."
+              onPaste={(e) => {
+                e.preventDefault();
+                const text = e.clipboardData.getData("text/plain");
+                document.execCommand("insertText", false, text);
+              }}
+            />
+          </div>
           <button
             type="submit"
-            className="px-3 text-white text-lg font-semibold rounded-lg py-1 bg-teal-600"
+            className="px-1 h-10 border-b-2 border-black w-10 text-white text-lg font-semibold rounded-full py-1 bg-teal-600"
           >
-            <LiaArrowCircleUpSolid className="hover:rotate-[360deg] transition-all duration-700 text-4xl" />
+            <LiaArrowCircleUpSolid className="hover:rotate-[360deg] transition-all duration-700 text-3xl" />
           </button>
         </form>
       </div>

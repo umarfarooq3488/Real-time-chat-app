@@ -16,7 +16,7 @@ const SideIcons = ({ setShowSideBar }) => {
     auth.signOut();
   };
   return (
-    <div className="w-10 dark:bg-gray-800 px-1 bg-gray-300 justify-between items-center flex space-y-5 pt-4 flex-col">
+    <div className="w-10 h-[85vh] dark:bg-gray-800 px-1 bg-gray-300 justify-between items-center flex space-y-5 pt-4 flex-col">
       <div className="top flex flex-col space-y-4">
         <RxHamburgerMenu
           onClick={() => setShowSideBar((prev) => !prev)}

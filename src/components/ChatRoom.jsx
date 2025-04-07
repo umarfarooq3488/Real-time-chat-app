@@ -65,7 +65,7 @@ const ChatRoom = ({ scroll }) => {
     <>
       {chatType !== null ? (
         <div>
-          <div className="dark:bg-gray-900 bg-gray-200 gap-3 overflow-auto flex-col flex h-[78vh] xl:h-[80vh] p-2 py-10 md:p-7">
+          <div className="dark:bg-gray-900 w-[80vw] md:w-[78vw] bg-gray-200 gap-3 overflow-auto flex-col flex h-[74vh] xl:h-[78vh] p-2 py-10 md:p-7">
             {messages.map((msg) => (
               <Message key={msg.messageId} id={msg.id} message={msg} />
             ))}

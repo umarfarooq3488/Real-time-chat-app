@@ -14,7 +14,7 @@ import {
 
 const User_sidebar = ({ setShowSideBar }) => {
   const [user, setUser] = useState([]);
-  const { setChatType } = useUser();
+  const { setChatType, selectedUserId, chatType } = useUser();
 
   useEffect(() => {
     const q = query(
@@ -39,21 +39,38 @@ const User_sidebar = ({ setShowSideBar }) => {
     setShowSideBar(false);
   };
   return (
-    <div className="h-[90vh] z-50 overflow-auto duration-500 w-[87%] md:w-[100%] transition-all bg-gray-200 text-gray-600 dark:bg-gray-900 dark:text-teal-400 md:h-[90vh] md:relative absolute">
-      <div className=" cursor-pointer h-full border-r-4 p-3 border-gray-400">
+    <div className="h-[87vh] z-50 overflow-auto no-scrollbar duration-500 w-[87%] md:w-[20vw] transition-all bg-gray-200 text-gray-600 dark:bg-gray-900 dark:text-gray-100 md:h-[90vh] md:relative absolute">
+      <div className="cursor-pointer h-full border-r-4 p-3 border-gray-400">
         <div className="box flex flex-col">
           <div className="top text-xl font-bold p-3">Chats</div>
           <div className="users flex flex-col gap-1">
             <div>
               <div
                 onClick={selectGroup}
-                className="box overflow-hidden flex gap-3 dark:hover:bg-gray-600 hover:bg-[#c4c4c4] rounded-md dark:bg-gray-700 bg-gray-300 p-4"
+                className={`box overflow-hidden flex gap-3 rounded-md p-4 transition-colors duration-200
+                  ${
+                    chatType === "group"
+                      ? "bg-teal-700 dark:bg-teal-800 text-white"
+                      : "dark:hover:bg-gray-600 hover:bg-[#c4c4c4] dark:bg-gray-700 bg-gray-300"
+                  }`}
               >
-                <img src={Groupdp} className="rounded-full w-10" alt="" />
+                <img src={Groupdp} className="rounded-full w-12" alt="" />
                 <div className="info flex flex-col">
-                  <h3 className="font-bold text-lg">Public Group</h3>
-                  <p className="text-sm text-nowrap dark:text-gray-300">
-                    Anyone can see you messages
+                  <h3
+                    className={`font-bold text-lg ${
+                      chatType === "group" ? "text-white" : "dark:text-gray-100"
+                    }`}
+                  >
+                    Public Group
+                  </h3>
+                  <p
+                    className={`text-sm text-nowrap ${
+                      chatType === "group"
+                        ? "text-gray-100"
+                        : "dark:text-gray-300"
+                    }`}
+                  >
+                    Anyone can see your messages
                   </p>
                 </div>
               </div>
@@ -64,6 +81,9 @@ const User_sidebar = ({ setShowSideBar }) => {
                   setShowSideBar={setShowSideBar}
                   key={item.UserId}
                   user={item}
+                  isActive={
+                    selectedUserId === item.UserId && chatType === "private"
+                  }
                 />
               ))}
           </div>
