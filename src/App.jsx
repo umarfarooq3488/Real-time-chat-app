@@ -17,33 +17,23 @@ const Welcome = lazy(() => import("./components/Welcome"));
 // import the contextProvider
 import { ThemeProvider } from "./context/ThemeContext";
 import { UserProvider } from "./context/UserContext";
+import { GuestProvider } from "./context/GuestUserContext";
+import { useGuest } from "./context/GuestUserContext";
 
-function App() {
-  const [themeMode, setThemeMode] = useState("light");
+const AppContent = () => {
+  const { isGuest } = useGuest();
   const [user] = useAuthState(auth);
   const [userToSave, setUserToSave] = useState(false);
 
-  // functions to toggle the theme
-  const toggleTheme = () => {
-    setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
-  };
-
-  // Set the class in the html using useEffect
-  useEffect(() => {
-    document.querySelector("html").classList.remove("dark", "light");
-    document.querySelector("html").classList.add(themeMode);
-  }, [themeMode]);
-
   useEffect(() => {
     if (user) {
-      const { uid, displayName } = user; // Use the `user` object directly
+      const { uid, displayName } = user;
       const MyQuery = query(
         collection(dataBase, "Users"),
         orderBy("uid", "asc"),
         limit(50)
       );
 
-      // Fetch users from the database and check if the current user already exists
       const unsubscribe = onSnapshot(MyQuery, (snapshot) => {
         const fetchUsers = snapshot.docs.map((doc) => ({
           messageId: doc.id,
@@ -54,17 +44,43 @@ function App() {
           (user) => user.uid === uid && user.displayName === displayName
         );
 
-        if (!userFound) {
-          if (auth.currentUser) {
-            setUserToSave(true); // Trigger saving the user
-            console.log("set User to save is true");
-          }
+        if (!userFound && auth.currentUser) {
+          setUserToSave(true);
         }
       });
 
-      return () => unsubscribe(); // Cleanup on component unmount
+      return () => unsubscribe();
     }
   }, [user]);
+
+  const handleSaveComplete = (success) => {
+    if (success) {
+      console.log("User save process completed successfully.");
+      setUserToSave(false);
+    } else {
+      console.error("User save process failed.");
+    }
+  };
+
+  return (
+    <div className="bg-gray-300 dark:bg-gray-800 h-screen">
+      {user || isGuest ? <ChatBox /> : <Welcome />}
+      {userToSave && <SaveUserData onSaveComplete={handleSaveComplete} />}
+    </div>
+  );
+};
+
+function App() {
+  const [themeMode, setThemeMode] = useState("light");
+
+  const toggleTheme = () => {
+    setThemeMode((prev) => (prev === "light" ? "dark" : "light"));
+  };
+
+  useEffect(() => {
+    document.querySelector("html").classList.remove("dark", "light");
+    document.querySelector("html").classList.add(themeMode);
+  }, [themeMode]);
 
   const MemorizedValues = useMemo(
     () => ({
@@ -74,30 +90,16 @@ function App() {
     [themeMode]
   );
 
-  const handleSaveComplete = (success) => {
-    if (success) {
-      console.log("User save process completed successfully.");
-      setUserToSave(false); // Reset after successful save
-    } else {
-      console.error("User save process failed.");
-    }
-  };
-
   return (
-    <>
+    <GuestProvider>
       <UserProvider>
         <ThemeProvider value={MemorizedValues}>
           <Suspense fallback={<div>Loading...</div>}>
-            <div className="bg-gray-300 dark:bg-gray-800 h-screen">
-              {user ? <ChatBox /> : <Welcome />}
-              {userToSave && (
-                <SaveUserData onSaveComplete={handleSaveComplete} />
-              )}
-            </div>
+            <AppContent />
           </Suspense>
         </ThemeProvider>
       </UserProvider>
-    </>
+    </GuestProvider>
   );
 }
 

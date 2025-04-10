@@ -43,7 +43,7 @@ const SideIcons = ({ setShowSideBar }) => {
         <Popover>
           <PopoverTrigger>
             <img
-              src={auth.currentUser.photoURL}
+              src={auth.currentUser?.photoURL}
               alt="Google"
               className="w-7 cursor-pointer rounded-full"
             />
@@ -54,15 +54,15 @@ const SideIcons = ({ setShowSideBar }) => {
           >
             <div className="userInfo mb-10">
               <img
-                src={auth.currentUser.photoURL}
+                src={auth.currentUser?.photoURL}
                 alt="Google"
                 className="w-10 mx-auto cursor-pointer rounded-full"
               />
               <div className="name text-center text-lg font-bold">
-                {auth.currentUser.displayName}
+                {auth.currentUser?.displayName}
               </div>
               <div className="email text-center text-wrap">
-                {auth.currentUser.email}
+                {auth.currentUser?.email}
               </div>
             </div>
             <button

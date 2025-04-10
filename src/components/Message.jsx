@@ -39,7 +39,7 @@ const Message = ({ message, id }) => {
   return (
     <div
       className={`flex flex-col sm:flex-row ${
-        id === user.uid ? "justify-end" : ""
+        id === user?.uid ? "justify-end" : ""
       } w-full px-2 mb-4`}
     >
       <div className="image flex-shrink-0 mb-2 max-w-[50%] sm:mb-0 sm:mr-3">
@@ -48,7 +48,7 @@ const Message = ({ message, id }) => {
       <div
         key={id}
         className={`dark:bg-gray-700 ${
-          id === user.uid
+          id === user?.uid
             ? "dark:bg-green-900 bg-green-800 hover:bg-green-900 dark:hover:bg-green-950"
             : "hover:bg-gray-900 dark:hover:bg-gray-800 bg-gray-800"
         } text-white p-3 sm:p-4 rounded-lg max-w-[100%] sm:max-w-[70%] md:max-w-[60%] relative`}
@@ -57,7 +57,7 @@ const Message = ({ message, id }) => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3 mb-2">
             <div
               className={`name font-bold text-base sm:text-lg ${
-                id === user.uid ? "text-teal-200" : "text-teal-300"
+                id === user?.uid ? "text-teal-200" : "text-teal-300"
               }`}
             >
               {message.name}
@@ -87,7 +87,7 @@ const Message = ({ message, id }) => {
                 }`}
               />
             </button>
-            {id === user.uid && deleteState != true ? (
+            {id === user?.uid && deleteState != true ? (
               <button
                 onClick={handleDelete}
                 className="p-1 mb-5 hover:bg-gray-700 rounded-full transition-colors duration-200"
@@ -107,10 +107,10 @@ const Message = ({ message, id }) => {
           </div>
           <div
             className={`absolute bottom-1 ${
-              id === user.uid ? "right-2" : "right-2"
+              id === user?.uid ? "right-2" : "right-2"
             } text-gray-300`}
           >
-            {id === user.uid ? (
+            {id === user?.uid ? (
               <MdArrowOutward className="text-base sm:text-lg" />
             ) : (
               <FiArrowDownRight className="text-base sm:text-lg" />

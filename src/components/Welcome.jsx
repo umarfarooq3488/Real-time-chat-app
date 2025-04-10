@@ -5,6 +5,7 @@ import BackgroundImg from "./background.jpeg";
 import { auth } from "../config/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { MessageCircle, ArrowRight } from "lucide-react";
+import { useGuest } from "@/context/GuestUserContext";
 
 const signInGoogle = () => {
   const provide = new GoogleAuthProvider();
@@ -12,6 +13,8 @@ const signInGoogle = () => {
 };
 
 const Welcome = () => {
+  const { startGuestSession } = useGuest();
+
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       {/* Gradient overlay on background */}
@@ -104,6 +107,15 @@ const Welcome = () => {
             <small className="text-gray-500 dark:text-slate-400 text-center">
               Sign in securely with your Google account to begin
             </small>
+
+            {/* Guest Login Button */}
+            <button
+              onClick={startGuestSession}
+              className="px-4 py-2 border flex gap-2 border-slate-600 rounded-lg text-slate-700 dark:text-blue-200 hover:scale-105 duration-500 dark:hover:text-blue-100 hover:text-slate-900 hover:shadow transition duration-150"
+            >
+              Continue as Guest
+              <small>(View-only access for 1 hour)</small>
+            </button>
           </div>
         </div>
       </section>

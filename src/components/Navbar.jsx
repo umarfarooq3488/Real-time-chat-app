@@ -22,7 +22,7 @@ const Navbar = () => {
 
   return (
     <div>
-      <nav className="flex justify-between items-center p-3 bg-gray-300 dark:bg-gray-800 shadow-lg text-black dark:text-white">
+      <nav className="flex justify-between items-center p-2 bg-gray-300 dark:bg-gray-800 shadow-lg text-black dark:text-white">
         {/* Logo Section */}
         <div className="logo">
           <a

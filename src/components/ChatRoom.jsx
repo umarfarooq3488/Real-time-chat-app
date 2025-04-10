@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import Message from "./Message";
 import { dataBase, auth } from "../config/firebase";
 import SendMessage from "./SendMessage";
@@ -20,7 +20,7 @@ const ChatRoom = ({ scroll }) => {
     if (chatType === "private") {
       const conversationId = createConversationId(
         selectedUserId,
-        auth.currentUser.uid
+        auth.currentUser?.uid
       );
       const q = query(
         collection(dataBase, `PrivateMessages/${conversationId}/Messages`),
@@ -33,13 +33,15 @@ const ChatRoom = ({ scroll }) => {
           ...doc.data(),
         }));
         setMessages(fetchMessages);
-
-        return () => unsubscribe();
       });
-    } else if (chatType === "group") {
+
+      return () => unsubscribe();
+    }
+
+    if (chatType === "group") {
       const MyQuery = query(
         collection(dataBase, "Messages"),
-        orderBy("createAt", "asc"), // Order messages by creation time in ascending order
+        orderBy("createAt", "asc"),
         limit(50)
       );
 
@@ -48,10 +50,10 @@ const ChatRoom = ({ scroll }) => {
           messageId: doc.id,
           ...doc.data(),
         }));
-        setMessages(fetchMessages); // Update state with fetched messages
+        setMessages(fetchMessages);
       });
 
-      return () => unsubscribe && unsubscribe(); // Cleanup subscription on component unmount
+      return () => unsubscribe();
     }
   }, [chatType, selectedUserId]);
 
@@ -65,7 +67,7 @@ const ChatRoom = ({ scroll }) => {
     <>
       {chatType !== null ? (
         <div>
-          <div className="dark:bg-gray-900 w-[80vw] md:w-[78vw] bg-gray-200 gap-3 overflow-auto flex-col flex h-[74vh] xl:h-[78vh] p-2 py-10 md:p-7">
+          <div className="dark:bg-gray-900 no-scrollbar w-[80vw] md:w-[77vw] bg-gray-200 gap-3 overflow-y-auto flex-col flex h-[74vh] xl:h-[80vh] p-2 py-10 md:p-7">
             {messages.map((msg) => (
               <Message key={msg.messageId} id={msg.id} message={msg} />
             ))}
@@ -74,8 +76,7 @@ const ChatRoom = ({ scroll }) => {
           <SendMessage scroll={scroll} />
         </div>
       ) : (
-        // <div className="h-[90vh] ">sm</div>
-        <div className="flex dark:bg-gray-900 bg-gray-200 justify-center h-[89vh] font-thin items-center text-4xl lg:text-8xl text-gray-400 ">
+        <div className="flex dark:bg-gray-900 bg-gray-200 justify-center h-[89vh] font-thin items-center text-4xl lg:text-8xl text-gray-400">
           Message Now
         </div>
       )}
