@@ -26,7 +26,7 @@ const ChatRoom = ({ scroll }) => {
         const q = query(
           collection(dataBase, `PrivateMessages/${conversationId}/Messages`),
           orderBy("createAt", "desc"),
-          limit(70)
+          limit(50)
         );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -34,7 +34,7 @@ const ChatRoom = ({ scroll }) => {
             messageId: doc.id,
             ...doc.data(),
           })); // Debug log
-          setMessages(fetchMessages);
+          setMessages(fetchMessages.reverse());
         });
 
         return () => unsubscribe();
@@ -43,7 +43,7 @@ const ChatRoom = ({ scroll }) => {
       if (chatType === "group") {
         const MyQuery = query(
           collection(dataBase, "Messages"),
-          orderBy("createAt", "asc"),
+          orderBy("createAt", "desc"),
           limit(50)
         );
 
@@ -52,7 +52,7 @@ const ChatRoom = ({ scroll }) => {
             messageId: doc.id,
             ...doc.data(),
           }));
-          setMessages(fetchMessages);
+          setMessages(fetchMessages.reverse());
         });
 
         return () => unsubscribe();

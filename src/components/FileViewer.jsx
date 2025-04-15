@@ -22,7 +22,7 @@ const FileViewer = ({ fileURL, fileType }) => {
         <img
           src={fileURL}
           alt="Attached file"
-          className="rounded-lg max-h-[200px] object-contain"
+          className="rounded-lg object-contain"
           loading="lazy"
         />
       </div>
@@ -32,11 +32,11 @@ const FileViewer = ({ fileURL, fileType }) => {
   if (isPDF) {
     return (
       <div className="my-2 flex flex-col gap-2">
+        {/* First option: Direct download link */}
         <a
           href={fileURL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500 hover:text-blue-700 flex items-center gap-2"
+          download={getFileName(fileURL)}
+          className="text-blue-500 hover:text-blue-700 flex items-center gap-2 mb-2"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -46,8 +46,17 @@ const FileViewer = ({ fileURL, fileType }) => {
           >
             <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
           </svg>
-          View PDF: {getFileName(fileURL)}
+          Download PDF: {getFileName(fileURL)}
         </a>
+
+        {/* Second option: Google Docs Viewer fallback */}
+        <iframe
+          src={`https://docs.google.com/viewer?url=${encodeURIComponent(
+            fileURL
+          )}&embedded=true`}
+          className="w-full h-[500px] rounded-lg border border-gray-300"
+          title="PDF viewer"
+        />
       </div>
     );
   }
@@ -81,7 +90,7 @@ const FileViewer = ({ fileURL, fileType }) => {
         href={fileURL}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-blue-500 hover:text-blue-700 flex items-center gap-2"
+        className="text-red-500 hover:text-red-600 flex items-center gap-2"
         download
       >
         <svg
