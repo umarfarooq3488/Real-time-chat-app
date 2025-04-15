@@ -51,7 +51,7 @@ const ChatRoom = ({ scroll }) => {
           const fetchMessages = snapshot.docs.map((doc) => ({
             messageId: doc.id,
             ...doc.data(),
-          })); // Debug log
+          }));
           setMessages(fetchMessages);
         });
 
