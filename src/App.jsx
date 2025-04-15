@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense, useMemo } from "react";
-import { auth } from "./config/firebase";
+import { auth } from "@/config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import SaveUserData from "./components/User/SaveUserData";
 import {
