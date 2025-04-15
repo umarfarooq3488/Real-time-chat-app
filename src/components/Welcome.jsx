@@ -2,6 +2,8 @@ import React from "react";
 import Navbar from "./Navbar";
 import WhatsappImg from "./whatsapp.png";
 import BackgroundImg from "./background.jpeg";
+import linklineLogo from "../assets/linkline_logo.png";
+import linklinefav from "../assets/linkline_fav.png";
 import { auth } from "../config/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { MessageCircle, ArrowRight } from "lucide-react";
@@ -42,7 +44,7 @@ const Welcome = () => {
       {/* Content section */}
       <section className="relative z-10 flex-1 flex flex-col justify-center items-center p-4 sm:p-8">
         <div className="max-w-4xl w-full backdrop-blur-lg bg-white/80 dark:bg-slate-900/40 p-8 rounded-2xl shadow-lg dark:shadow-2xl border border-gray-200 dark:border-slate-700/50">
-          <div className="flex flex-col items-center space-y-8">
+          <div className="flex flex-col items-center space-y-5">
             {/* Header Section */}
             <div className="text-center space-y-4">
               <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
@@ -85,9 +87,9 @@ const Welcome = () => {
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full blur-2xl opacity-10 dark:opacity-20"></div>
               <img
-                src={WhatsappImg}
+                src={linklinefav}
                 alt="React Logo"
-                className="w-24 h-24 relative animate-pulse"
+                className="w-32 h-32 relative animate-pulse"
               />
             </div>
 
@@ -103,8 +105,7 @@ const Welcome = () => {
                 <ArrowRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
-
-            <small className="text-gray-500 dark:text-slate-400 text-center">
+            <small className="text-gray-500 text-sm dark:text-slate-400 text-center">
               Sign in securely with your Google account to begin
             </small>
 

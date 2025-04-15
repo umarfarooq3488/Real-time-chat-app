@@ -3,6 +3,7 @@ import { auth } from "../config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { MdArrowOutward, MdContentCopy, MdDelete } from "react-icons/md";
 import { FiArrowDownRight } from "react-icons/fi";
+import FileViewer from "./FileViewer";
 
 const Message = ({ message, id }) => {
   const [user] = useAuthState(auth);
@@ -74,6 +75,9 @@ const Message = ({ message, id }) => {
             </pre>
           ) : (
             <span className="text-sm italic">This message was deleted</span>
+          )}
+          {message.fileURL && (
+            <FileViewer fileURL={message.fileURL} fileType={message.fileType} />
           )}
           <div className="absolute right-0 top-0 flex items-center gap-2">
             <button

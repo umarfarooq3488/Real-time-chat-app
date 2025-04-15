@@ -17,43 +17,48 @@ const ChatRoom = ({ scroll }) => {
   const { chatType, selectedUserId } = useUser();
 
   useEffect(() => {
-    if (chatType === "private") {
-      const conversationId = createConversationId(
-        selectedUserId,
-        auth.currentUser?.uid
-      );
-      const q = query(
-        collection(dataBase, `PrivateMessages/${conversationId}/Messages`),
-        orderBy("createAt", "asc"),
-        limit(50)
-      );
-      const unsubscribe = onSnapshot(q, (snapshot) => {
-        const fetchMessages = snapshot.docs.map((doc) => ({
-          messageId: doc.id,
-          ...doc.data(),
-        }));
-        setMessages(fetchMessages);
-      });
+    try {
+      if (chatType === "private") {
+        const conversationId = createConversationId(
+          selectedUserId,
+          auth.currentUser?.uid
+        );
+        const q = query(
+          collection(dataBase, `PrivateMessages/${conversationId}/Messages`),
+          orderBy("createAt", "desc"),
+          limit(70)
+        );
 
-      return () => unsubscribe();
-    }
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const fetchMessages = snapshot.docs.map((doc) => ({
+            messageId: doc.id,
+            ...doc.data(),
+          })); // Debug log
+          setMessages(fetchMessages);
+        });
 
-    if (chatType === "group") {
-      const MyQuery = query(
-        collection(dataBase, "Messages"),
-        orderBy("createAt", "asc"),
-        limit(50)
-      );
+        return () => unsubscribe();
+      }
 
-      const unsubscribe = onSnapshot(MyQuery, (snapshot) => {
-        const fetchMessages = snapshot.docs.map((doc) => ({
-          messageId: doc.id,
-          ...doc.data(),
-        }));
-        setMessages(fetchMessages);
-      });
+      if (chatType === "group") {
+        const MyQuery = query(
+          collection(dataBase, "Messages"),
+          orderBy("createAt", "asc"),
+          limit(50)
+        );
 
-      return () => unsubscribe();
+        const unsubscribe = onSnapshot(MyQuery, (snapshot) => {
+          const fetchMessages = snapshot.docs.map((doc) => ({
+            messageId: doc.id,
+            ...doc.data(),
+          })); // Debug log
+          setMessages(fetchMessages);
+        });
+
+        return () => unsubscribe();
+      }
+    } catch (error) {
+      console.error("Error fetching messages:", error);
     }
   }, [chatType, selectedUserId]);
 
