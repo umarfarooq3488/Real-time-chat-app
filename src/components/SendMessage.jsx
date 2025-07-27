@@ -164,6 +164,12 @@ const SendMessage = ({ scroll }) => {
                 bottom: 0,
               }}
               onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage(e);
+                }
+              }}
               className="w-full h-[70px] dark:bg-gray-600 dark:text-gray-100 p-3 text-black
                        overflow-y-auto resize-none font-mono whitespace-pre-wrap rounded-lg"
               placeholder="Type a message..."
