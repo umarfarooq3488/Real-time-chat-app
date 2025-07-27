@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { auth } from "../../config/firebase";
 import { BsChatDots } from "react-icons/bs";
 import { IoSettingsOutline } from "react-icons/io5";
+import { useUserVisibility } from "../../context/userVisibilityContext";
 import { deleteUserByUID } from "./DeleteUser";
 import {
   Popover,
@@ -12,6 +13,7 @@ import {
 import ThemeBtn from "../ThemeBtn";
 
 const SideIcons = ({ setShowSideBar }) => {
+  const { visible, updateVisibility } = useUserVisibility();
   const logout = () => {
     auth.signOut();
   };
@@ -66,6 +68,12 @@ const SideIcons = ({ setShowSideBar }) => {
               </div>
             </div>
             <button
+              onClick={() => updateVisibility(!visible)}
+              className="border p-2 transition-all duration-500 hover:bg-teal-600 font-medium"
+            >
+              {visible ? "Hide Account" : "Show Account"}
+            </button>
+              <button
               onClick={logout}
               className="border p-2 transition-all duration-500 hover:bg-teal-600 font-medium"
             >

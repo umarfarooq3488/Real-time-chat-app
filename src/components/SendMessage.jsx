@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { auth, dataBase } from "../config/firebase";
 import { LiaArrowCircleUpSolid } from "react-icons/lia";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
@@ -6,6 +6,7 @@ import { useGuest } from "@/context/GuestUserContext";
 import { useUser } from "../context/UserContext";
 import createConversationId from "./Private chat/SortingUserId";
 import { FileUploader } from "@/Cloudinary/FileUploader";
+import { useUserVisibility } from "../context/userVisibilityContext";
 
 const SendMessage = ({ scroll }) => {
   const [message, setMessage] = useState("");
@@ -13,9 +14,26 @@ const SendMessage = ({ scroll }) => {
   const [FileDownloadUrl, setFileDownloadUrl] = useState(null);
   const { chatType, selectedUserId } = useUser();
   const { isGuest } = useGuest();
+  const { visible, loading } = useUserVisibility(); // visible can be undefined, true, or false
+
+  // Ref to track if it's the very first render cycle
+  const isFirstRender = useRef(true);
+
+  // Set isFirstRender to false after the initial render
+  useEffect(() => {
+    isFirstRender.current = false;
+  }, []); // Empty dependency array means this runs once after the initial render
 
   const sendMessage = async (e) => {
     e.preventDefault();
+
+    // Allow sending on the very first render, OR if loading, OR if visible is true
+    // Block ONLY if it's NOT the first render, NOT loading, AND visible is explicitly false.
+    if (!isFirstRender.current && !loading && visible === false) {
+      alert("You are invisible. Set your visibility to send messages.");
+      return;
+    }
+
     if (message.trim() === "" && !selectedFile) return;
 
     try {
@@ -57,6 +75,7 @@ const SendMessage = ({ scroll }) => {
     }
   };
 
+  // Keep your useEffect for FileUploader, no changes needed here
   useEffect(() => {
     const geturl = async () => {
       const url = await FileUploader(selectedFile);
@@ -65,6 +84,8 @@ const SendMessage = ({ scroll }) => {
     geturl();
   }, [selectedFile]);
 
+
+  // Conditional Rendering for the UI
   if (isGuest) {
     return (
       <div className="sendbox bg-gray-300 h-[10px] dark:bg-gray-800 p-4 text-center">
@@ -72,7 +93,18 @@ const SendMessage = ({ scroll }) => {
       </div>
     );
   }
+  console.log(visible)
+  console.log(loading)
+  // Show "You are invisible" ONLY if it's NOT the first render, NOT loading, AND visible is explicitly false.
+  if (!isFirstRender.current && !loading && visible === false) {
+    return (
+      <div className="sendbox bg-gray-300 h-[10px] dark:bg-gray-800 p-4 text-center">
+        You are invisible. Set your visibility to send messages.
+      </div>
+    );
+  }
 
+  // Default return: Render the message input form
   return (
     <div className="sendbox bg-gray-300 h-[80px] max-w-[100%] md:max-w-[75%] lg:max-w-full dark:bg-gray-800 p-4">
       <form onSubmit={sendMessage} className="flex items-center gap-2">
@@ -132,7 +164,7 @@ const SendMessage = ({ scroll }) => {
                 bottom: 0,
               }}
               onChange={(e) => setMessage(e.target.value)}
-              className="w-full h-[70px] dark:bg-gray-600 dark:text-gray-100 p-3 text-black 
+              className="w-full h-[70px] dark:bg-gray-600 dark:text-gray-100 p-3 text-black
                        overflow-y-auto resize-none font-mono whitespace-pre-wrap rounded-lg"
               placeholder="Type a message..."
             />

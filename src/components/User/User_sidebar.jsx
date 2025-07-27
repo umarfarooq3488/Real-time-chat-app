@@ -9,6 +9,7 @@ import {
   onSnapshot,
   orderBy,
   limit,
+  where,
   query,
 } from "firebase/firestore";
 
@@ -19,6 +20,7 @@ const User_sidebar = ({ setShowSideBar }) => {
   useEffect(() => {
     const q = query(
       collection(dataBase, "Users"),
+      where("visible", "==", true),
       orderBy("userId", "asc"),
       limit(50)
     );

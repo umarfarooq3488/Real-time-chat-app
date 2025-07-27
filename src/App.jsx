@@ -19,6 +19,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { UserProvider } from "./context/UserContext";
 import { GuestProvider } from "./context/GuestUserContext";
 import { useGuest } from "./context/GuestUserContext";
+import { UserVisibilityProvider } from "./context/userVisibilityContext";
 
 const AppContent = () => {
   const { isGuest } = useGuest();
@@ -90,14 +91,18 @@ function App() {
     [themeMode]
   );
 
+  const [user] = useAuthState(auth); // Moved useAuthState here to be accessible by UserVisibilityProvider
+
   return (
     <GuestProvider>
       <UserProvider>
+        <UserVisibilityProvider user={user}>
         <ThemeProvider value={MemorizedValues}>
           <Suspense fallback={<div>Loading...</div>}>
             <AppContent />
-          </Suspense>
-        </ThemeProvider>
+            </Suspense>
+          </ThemeProvider>
+        </UserVisibilityProvider>
       </UserProvider>
     </GuestProvider>
   );

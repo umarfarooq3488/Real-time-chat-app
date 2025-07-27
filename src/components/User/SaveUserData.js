@@ -23,6 +23,7 @@ const SaveUserData = ({ onSaveComplete }) => {
           userId: uid,
           displayName: displayName,
           photoUrl: photoURL,
+          visible: true
         };
 
         // Save user data first
