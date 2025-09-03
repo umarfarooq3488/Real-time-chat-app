@@ -1,13 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 
 const User = ({ user, setShowSideBar, isActive }) => {
-  const { setChatType, setSelectedUserId } = useUser();
+  const navigate = useNavigate();
   const selectUser = () => {
-    setChatType("private");
-    setSelectedUserId(user.userId);
+    navigate(`/dm/${user.UserId}`);
     setShowSideBar(false);
   };
+  console.log(user.photoUrl);
   return (
     <div>
       <div

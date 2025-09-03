@@ -3,6 +3,7 @@ import { auth } from "../config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { MdArrowOutward, MdContentCopy, MdDelete } from "react-icons/md";
 import { FiArrowDownRight } from "react-icons/fi";
+import { Bot, AtSign, FileText, Image, File } from "lucide-react";
 import FileViewer from "./FileViewer";
 
 const Message = ({ message, id }) => {
@@ -37,6 +38,75 @@ const Message = ({ message, id }) => {
     setDeleteState(true);
   };
 
+  // Function to render message type indicator
+  const renderMessageType = () => {
+    if (!message.type) return null;
+
+    const typeConfig = {
+      text: { icon: null, label: "Text", color: "text-gray-400" },
+      file: { icon: File, label: "File", color: "text-blue-400" },
+      aiResponse: { icon: Bot, label: "AI", color: "text-purple-400" },
+    };
+
+    const config = typeConfig[message.type] || typeConfig.text;
+    const IconComponent = config.icon;
+
+    return (
+      <div className={`flex items-center gap-1 text-xs ${config.color}`}>
+        {IconComponent && <IconComponent size={12} />}
+        <span>{config.label}</span>
+      </div>
+    );
+  };
+
+  // Function to render mentions
+  const renderMentions = () => {
+    if (!message.mentions || message.mentions.length === 0) return null;
+
+    return (
+      <div className="flex flex-wrap gap-1 mt-2">
+        {message.mentions.map((mention, index) => (
+          <span
+            key={index}
+            className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full"
+          >
+            <AtSign size={10} />
+            {mention}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
+  // Function to render file information
+  const renderFileInfo = () => {
+    if (!message.file) return null;
+
+    const getFileIcon = (fileType) => {
+      if (fileType.startsWith('image/')) return Image;
+      if (fileType.startsWith('text/')) return FileText;
+      return File;
+    };
+
+    const FileIcon = getFileIcon(message.file.type);
+
+    return (
+      <div className="mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
+        <div className="flex items-center gap-2">
+          <FileIcon size={16} className="text-blue-500" />
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
+              {message.file.name}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              {(message.file.size / 1024 / 1024).toFixed(2)} MB
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div
       className={`flex flex-col sm:flex-row ${
@@ -63,7 +133,8 @@ const Message = ({ message, id }) => {
             >
               {message.name}
             </div>
-            <div className="flex items-center text-xs sm:text-sm text-gray-300">
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-300">
+              {renderMessageType()}
               <span>{formattedDate}</span>
               <span className="mx-1">•</span>
               <span>{formattedTime}</span>
@@ -76,9 +147,18 @@ const Message = ({ message, id }) => {
           ) : (
             <span className="text-sm italic">This message was deleted</span>
           )}
-          {message.fileURL && (
+          
+          {/* Render mentions */}
+          {renderMentions()}
+          
+          {/* Render file information */}
+          {renderFileInfo()}
+          
+          {/* Legacy file support */}
+          {message.fileURL && !message.file && (
             <FileViewer fileURL={message.fileURL} fileType={message.fileType} />
           )}
+          
           <div className="absolute right-0 top-0 flex items-center gap-2">
             <button
               onClick={copyToClipboard}
@@ -99,26 +179,7 @@ const Message = ({ message, id }) => {
               >
                 <MdDelete className={`text-xl text-red-600`} />
               </button>
-            ) : (
-              ""
-            )}
-            <div
-              className={`absolute -top-8 right-0 bg-gray-800 text-xs px-2 py-1 rounded 
-      transition-opacity duration-200 ${copied ? "opacity-100" : "opacity-0"}`}
-            >
-              Copied!
-            </div>
-          </div>
-          <div
-            className={`absolute bottom-1 ${
-              id === user?.uid ? "right-2" : "right-2"
-            } text-gray-300`}
-          >
-            {id === user?.uid ? (
-              <MdArrowOutward className="text-base sm:text-lg" />
-            ) : (
-              <FiArrowDownRight className="text-base sm:text-lg" />
-            )}
+            ) : null}
           </div>
         </div>
       </div>

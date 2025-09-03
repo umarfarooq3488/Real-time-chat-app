@@ -1,15 +1,25 @@
 import React, { useRef, useEffect, useState } from "react";
-import Navbar from "./Navbar";
-import ChatRoom from "./ChatRoom";
-import User_sidebar from "./User/User_sidebar";
-import SideIcons from "./User/SideIcons";
+import { useParams } from "react-router-dom";
+import Navbar from "../layouts/Navbar";
+import ChatRoom from "../components/ChatRoom";
+import User_sidebar from "../components/User/User_sidebar";
+import SideIcons from "../components/User/SideIcons";
 import { useGuest } from "@/context/GuestUserContext";
+import { useUser } from "../context/UserContext";
 
-const ChatBox = () => {
+const DirectMessage = () => {
+  const { userId } = useParams();
   const scrollRef = useRef();
   const [showSideBar, setShowSideBar] = useState(true);
   const { isGuest, guestSessionStart, endGuestSession } = useGuest();
   const [timeRemaining, setTimeRemaining] = useState(3600);
+  const { setChatType, setSelectedUserId } = useUser();
+
+  useEffect(() => {
+    // Set the chat type to private when this component mounts
+    setChatType("private");
+    setSelectedUserId(userId);
+  }, [userId, setChatType, setSelectedUserId]);
 
   useEffect(() => {
     if (isGuest) {
@@ -53,4 +63,4 @@ const ChatBox = () => {
   );
 };
 
-export default ChatBox;
+export default DirectMessage; 

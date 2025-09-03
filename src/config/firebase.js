@@ -19,6 +19,5 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const dataBase = getFirestore(app);
-
 // Get messaging object.
 export const messaging = getMessaging(app);
