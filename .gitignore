@@ -41,3 +41,11 @@ lerna-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Secrets and keys
+backend/serviceAccountKey.json
+backend/*.key
+backend/*.pem
+backend/*.p12
+serviceAccount*.json
+credentials*.json
