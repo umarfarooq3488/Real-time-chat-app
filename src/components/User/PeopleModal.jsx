@@ -15,6 +15,7 @@ const PeopleModal = ({ open, onClose, currentUser, users }) => {
   }, [users, query]);
 
   if (!open) return null;
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px]" onClick={onClose}></div>

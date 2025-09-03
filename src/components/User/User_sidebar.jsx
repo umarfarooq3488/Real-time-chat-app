@@ -20,7 +20,7 @@ import { auth } from "@/config/firebase";
 import PeopleList from "./PeopleList";
 import Requests from "./Requests";
 
-const User_sidebar = ({ setShowSideBar, onOpenPeople }) => {
+const User_sidebar = ({ setShowSideBar, onOpenPeople = () => console.warn("onOpenPeople not provided") }) => {
   const [allUsers, setAllUsers] = useState([]);
   const [currentUserDoc, setCurrentUserDoc] = useState(null);
   const navigate = useNavigate();
@@ -125,7 +125,7 @@ const User_sidebar = ({ setShowSideBar, onOpenPeople }) => {
                 <span>Direct Messages</span>
                 <button
                   onClick={onOpenPeople}
-                  className="text-xs px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
+                  className="text-xs px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors cursor-pointer"
                 >
                   People
                 </button>

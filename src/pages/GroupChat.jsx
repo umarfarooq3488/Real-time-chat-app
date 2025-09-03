@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { auth, dataBase } from "../config/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, orderBy, limit, onSnapshot } from "firebase/firestore";
 import Navbar from "../layouts/Navbar";
 import ChatRoom from "../components/ChatRoom";
 import User_sidebar from "../components/User/User_sidebar";
@@ -9,6 +9,7 @@ import SideIcons from "../components/User/SideIcons";
 import { useGuest } from "@/context/GuestUserContext";
 import { useUser } from "../context/UserContext";
 import { AlertCircle } from "lucide-react";
+import PeopleModal from "@/components/User/PeopleModal";
 
 const GroupChat = () => {
   const { groupId } = useParams();
@@ -22,6 +23,11 @@ const GroupChat = () => {
   const { isGuest, guestSessionStart, endGuestSession } = useGuest();
   const [timeRemaining, setTimeRemaining] = useState(3600);
   const { setChatType, setSelectedUserId } = useUser();
+  
+  // People modal state
+  const [peopleOpen, setPeopleOpen] = useState(false);
+  const [allUsers, setAllUsers] = useState([]);
+  const [meDoc, setMeDoc] = useState(null);
 
   useEffect(() => {
     // Set the chat type to group when this component mounts
@@ -104,6 +110,41 @@ const GroupChat = () => {
     }
   }, [isGuest, guestSessionStart]);
 
+  // Fetch current user data for People modal
+  useEffect(() => {
+    if (!auth.currentUser?.uid) return;
+    const ref = doc(dataBase, "Users", auth.currentUser.uid);
+    const unsub = onSnapshot(ref, (snap) => {
+      if (snap.exists()) {
+        setMeDoc({ id: snap.id, ...snap.data() });
+      }
+    });
+    return () => unsub();
+  }, []);
+
+  // Fetch visible users for People modal
+  useEffect(() => {
+    const q = query(
+      collection(dataBase, "Users"),
+      where("visible", "==", true),
+      orderBy("userId", "asc"),
+      limit(50)
+    );
+    const unsub = onSnapshot(q, (snapshot) => {
+      const list = snapshot.docs.map((d) => ({ UserId: d.id, ...d.data() }));
+      setAllUsers(list);
+    });
+    return () => unsub();
+  }, []);
+
+  const openPeople = () => {
+    setPeopleOpen(true);
+  };
+
+  const closePeople = () => {
+    setPeopleOpen(false);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
@@ -144,12 +185,13 @@ const GroupChat = () => {
       <div className="flex bg-gray-300 dark:bg-gray-800 m-0">
         <SideIcons setShowSideBar={setShowSideBar} />
         <div className={`${showSideBar ? "" : "hidden md:block"}`}>
-          <User_sidebar setShowSideBar={setShowSideBar} />
+          <User_sidebar setShowSideBar={setShowSideBar} onOpenPeople={openPeople} />
         </div>
         <div className="flex-grow">
           <ChatRoom scroll={scrollRef} />
         </div>
       </div>
+      <PeopleModal open={peopleOpen} onClose={closePeople} currentUser={meDoc} users={allUsers} />
     </div>
   );
 };
