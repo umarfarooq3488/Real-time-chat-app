@@ -1,7 +1,9 @@
 import { useState, useEffect, lazy, Suspense, useMemo } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { auth } from "@/config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import SaveUserData from "./components/User/SaveUserData";
+import PrivateRoute from "./layouts/PrivateRoute";
 import {
   collection,
   query,
@@ -11,8 +13,12 @@ import {
 } from "firebase/firestore";
 import { dataBase } from "./config/firebase";
 
-const ChatBox = lazy(() => import("./components/ChatBox"));
-const Welcome = lazy(() => import("./components/Welcome"));
+const ChatBox = lazy(() => import("./pages/ChatBox"));
+const Welcome = lazy(() => import("./pages/Welcome"));
+const GroupChat = lazy(() => import("./pages/GroupChat"));
+const DirectMessage = lazy(() => import("./pages/DirectMessage"));
+const Profile = lazy(() => import("./pages/Profile"));
+const JoinGroup = lazy(() => import("./pages/JoinGroup"));
 
 // import the contextProvider
 import { ThemeProvider } from "./context/ThemeContext";
@@ -64,15 +70,60 @@ const AppContent = () => {
   };
 
   return (
-    <div className="bg-gray-300 dark:bg-gray-800 h-screen">
-      {user || isGuest ? <ChatBox /> : <Welcome />}
-      {userToSave && <SaveUserData onSaveComplete={handleSaveComplete} />}
-    </div>
+    <Router>
+      <div className="bg-gray-300 dark:bg-gray-800 h-screen">
+        <Routes>
+          {/* Public route - Welcome page */}
+          <Route path="/" element={<Welcome />} />
+          
+          {/* Public route - Join group via invite link */}
+          <Route path="/join-group/:groupId" element={<JoinGroup />} />
+          
+          {/* Protected routes - require authentication */}
+          <Route 
+            path="/chat" 
+            element={
+              <PrivateRoute>  
+                <ChatBox />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/chat/:groupId" 
+            element={
+              <PrivateRoute>
+                <GroupChat />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/dm/:userId" 
+            element={
+              <PrivateRoute>
+                <DirectMessage />
+              </PrivateRoute>
+            } 
+          />
+          <Route 
+            path="/profile/:userId" 
+            element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            } 
+          />
+          
+          {/* Fallback route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+        {userToSave && <SaveUserData onSaveComplete={handleSaveComplete} />}
+      </div>
+    </Router>
   );
 };
 
 function App() {
-  const [themeMode, setThemeMode] = useState("light");
+  const [themeMode, setThemeMode] = useState("dark");
 
   const toggleTheme = () => {
     setThemeMode((prev) => (prev === "light" ? "dark" : "light"));

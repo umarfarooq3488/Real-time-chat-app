@@ -3,7 +3,7 @@ import Message from "./Message";
 import { dataBase, auth } from "../config/firebase";
 import SendMessage from "./SendMessage";
 import { useUser } from "../context/UserContext";
-import createConversationId from "./Private chat/SortingUserId";
+import createConversationId from "../lib/SortingUserId";
 import {
   collection,
   onSnapshot,
@@ -42,7 +42,7 @@ const ChatRoom = ({ scroll }) => {
 
       if (chatType === "group") {
         const MyQuery = query(
-          collection(dataBase, "Messages"),
+          collection(dataBase, `groups/${selectedUserId}/messages`),
           orderBy("createAt", "desc"),
           limit(50)
         );

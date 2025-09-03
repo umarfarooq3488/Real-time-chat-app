@@ -1,6 +1,6 @@
 // src/context/userVisibilityContext.jsx
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { getUserVisibility, setUserVisibility } from "@/components/utils/userVisibility";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { getUserVisibility, setUserVisibility } from "@/hooks/userVisibility";
 import { auth } from "@/config/firebase"; // Still needed for setUserVisibility indirectly
 
 const UserVisibilityContext = createContext();

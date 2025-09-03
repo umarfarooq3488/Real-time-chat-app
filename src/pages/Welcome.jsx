@@ -1,7 +1,9 @@
 import React from "react";
-import Navbar from "./Navbar";
-import WhatsappImg from "./whatsapp.png";
-import BackgroundImg from "./background.jpeg";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../layouts/Navbar";
+import AuthRedirect from "../components/AuthRedirect";
+import WhatsappImg from "../assets/whatsapp.png";
+import BackgroundImg from "../assets/background.jpeg";
 import linklineLogo from "../assets/linkline_logo.png";
 import linklinefav from "../assets/linkline_fav.png";
 import { auth } from "../config/firebase";
@@ -9,16 +11,24 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { MessageCircle, ArrowRight } from "lucide-react";
 import { useGuest } from "@/context/GuestUserContext";
 
-const signInGoogle = () => {
-  const provide = new GoogleAuthProvider();
-  signInWithPopup(auth, provide);
-};
-
 const Welcome = () => {
+  const navigate = useNavigate();
   const { startGuestSession } = useGuest();
+
+  const signInGoogle = async () => {
+    const provide = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provide);
+      // The redirect will be handled by the PrivateRoute component
+      // No need to manually navigate here
+    } catch (error) {
+      console.error("Sign in error:", error);
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+      <AuthRedirect />
       {/* Gradient overlay on background */}
       <div className="fixed inset-0 z-0">
         <img
@@ -111,7 +121,10 @@ const Welcome = () => {
 
             {/* Guest Login Button */}
             <button
-              onClick={startGuestSession}
+              onClick={() => {
+                startGuestSession();
+                // The redirect will be handled by the PrivateRoute component
+              }}
               className="px-4 py-2 border flex gap-2 border-slate-600 rounded-lg text-slate-700 dark:text-blue-200 hover:scale-105 duration-500 dark:hover:text-blue-100 hover:text-slate-900 hover:shadow transition duration-150"
             >
               Continue as Guest

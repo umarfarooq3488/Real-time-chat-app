@@ -1,15 +1,18 @@
 import React, { useEffect } from "react";
-import GoogleImg from "./Google.png";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import GoogleImg from "../assets/Google.png";
 import { auth } from "../config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 // import icons
 
 // importing custom hook for theme;
-import ThemeBtn from "./ThemeBtn";
+import ThemeBtn from "../components/ThemeBtn";
 // Navigation Bar Component
 const Navbar = () => {
   const [user] = useAuthState(auth);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const GoogleSignIn = () => {
     const googleProvider = new GoogleAuthProvider();
@@ -18,6 +21,7 @@ const Navbar = () => {
 
   const logout = () => {
     auth.signOut();
+    // The redirect will be handled automatically by the AuthRedirect component
   };
 
   return (
@@ -25,12 +29,12 @@ const Navbar = () => {
       <nav className="flex justify-between items-center p-2 bg-gray-300 dark:bg-gray-800 shadow-lg text-black dark:text-white">
         {/* Logo Section */}
         <div className="logo">
-          <a
-            href="#"
+          <Link
+            to="/"
             className="text-2xl font-bold  text-blue-600 dark:text-blue-400 hover:text-teal-700 transition duration-300"
           >
             LinkLine
-          </a>
+          </Link>
         </div>
 
         <div className="flex gap-2 md:gap-6 items-center">

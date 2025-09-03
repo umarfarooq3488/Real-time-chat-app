@@ -4,7 +4,7 @@ import { LiaArrowCircleUpSolid } from "react-icons/lia";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useGuest } from "@/context/GuestUserContext";
 import { useUser } from "../context/UserContext";
-import createConversationId from "./Private chat/SortingUserId";
+import createConversationId from "../lib/SortingUserId";
 import { FileUploader } from "@/Cloudinary/FileUploader";
 import { useUserVisibility } from "../context/userVisibilityContext";
 
@@ -24,6 +24,26 @@ const SendMessage = ({ scroll }) => {
     isFirstRender.current = false;
   }, []); // Empty dependency array means this runs once after the initial render
 
+  // Function to extract mentions from message text
+  const extractMentions = (text) => {
+    const mentionRegex = /@(\w+)/g;
+    const mentions = [];
+    let match;
+    
+    while ((match = mentionRegex.exec(text)) !== null) {
+      mentions.push(match[1]);
+    }
+    
+    return mentions;
+  };
+
+  // Function to determine message type
+  const getMessageType = (text, hasFile) => {
+    if (hasFile) return "file";
+    if (text.includes("@explain") || text.includes("@notes")) return "aiResponse";
+    return "text";
+  };
+
   const sendMessage = async (e) => {
     e.preventDefault();
 
@@ -38,16 +58,27 @@ const SendMessage = ({ scroll }) => {
 
     try {
       const { displayName, uid, photoURL } = auth.currentUser;
+      
+      // Extract mentions and determine message type
+      const mentions = extractMentions(message);
+      const messageType = getMessageType(message, !!selectedFile);
+      
       const messageData = {
         text: message.trim(),
         name: displayName,
         avatar: photoURL,
         createAt: serverTimestamp(),
         id: uid,
+        type: messageType,
+        mentions: mentions,
         // Only add file fields if a file is selected
         ...(selectedFile && {
-          fileURL: FileDownloadUrl,
-          fileType: selectedFile.type,
+          file: {
+            name: selectedFile.name,
+            type: selectedFile.type,
+            size: selectedFile.size,
+            url: FileDownloadUrl,
+          },
         }),
       };
 
@@ -62,7 +93,7 @@ const SendMessage = ({ scroll }) => {
           }
         );
       } else {
-        await addDoc(collection(dataBase, "Messages"), messageData);
+        await addDoc(collection(dataBase, `groups/${selectedUserId}/messages`), messageData);
       }
 
       // Reset form after successful send
@@ -83,7 +114,6 @@ const SendMessage = ({ scroll }) => {
     };
     geturl();
   }, [selectedFile]);
-
 
   // Conditional Rendering for the UI
   if (isGuest) {
@@ -172,9 +202,10 @@ const SendMessage = ({ scroll }) => {
               }}
               className="w-full h-[70px] dark:bg-gray-600 dark:text-gray-100 p-3 text-black
                        overflow-y-auto resize-none font-mono whitespace-pre-wrap rounded-lg"
-              placeholder="Type a message..."
+              placeholder="Type a message... Use @explain or @notes for AI features"
             />
           </div>
+         
         </div>
         <button
           type="submit"
