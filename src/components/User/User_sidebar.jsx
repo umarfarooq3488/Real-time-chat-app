@@ -13,15 +13,34 @@ import {
   limit,
   where,
   query,
+  doc,
 } from "firebase/firestore";
 import { Users, MessageCircle } from "lucide-react";
+import { auth } from "@/config/firebase";
+import PeopleList from "./PeopleList";
+import Requests from "./Requests";
 
-const User_sidebar = ({ setShowSideBar }) => {
-  const [user, setUser] = useState([]);
-  const [activeTab, setActiveTab] = useState("users"); // "users" or "groups"
-  const { setChatType, selectedUserId, chatType } = useUser();
+const User_sidebar = ({ setShowSideBar, onOpenPeople }) => {
+  const [allUsers, setAllUsers] = useState([]);
+  const [currentUserDoc, setCurrentUserDoc] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Determine initial tab from URL query (?tab=users|groups|requests)
+  const searchParams = new URLSearchParams(location.search);
+  const initialTab = ["users", "groups", "requests"].includes(searchParams.get("tab"))
+    ? searchParams.get("tab")
+    : "users";
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  useEffect(() => {
+    // Keep activeTab in sync if URL changes
+    const params = new URLSearchParams(location.search);
+    const tab = params.get("tab");
+    if (["users", "groups", "requests"].includes(tab) && tab !== activeTab) {
+      setActiveTab(tab);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     const q = query(
@@ -31,13 +50,24 @@ const User_sidebar = ({ setShowSideBar }) => {
       limit(50)
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      let fetchUsers = snapshot.docs.map((doc) => {
+      let fetchUsers = snapshot.docs.map((docSnap) => {
         return {
-          UserId: doc.id,
-          ...doc.data(),
+          UserId: docSnap.id,
+          ...docSnap.data(),
         };
       });
-      setUser(fetchUsers);
+      setAllUsers(fetchUsers);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!auth.currentUser?.uid) return;
+    const ref = doc(dataBase, "Users", auth.currentUser.uid);
+    const unsubscribe = onSnapshot(ref, (snap) => {
+      if (snap.exists()) {
+        setCurrentUserDoc({ id: snap.id, ...snap.data() });
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -46,6 +76,13 @@ const User_sidebar = ({ setShowSideBar }) => {
     navigate("/chat/defaultPublicGroup");
     setShowSideBar(false);
   };
+
+  const connectedUserIds = new Set(currentUserDoc?.connections || []);
+  const connectedUsers = allUsers
+    .filter((u) => u.userId && u.userId !== auth.currentUser?.uid)
+    .filter((u) => connectedUserIds.has(u.userId));
+
+  const incomingCount = (currentUserDoc?.pendingIncoming || []).length;
 
   return (
     <div className="h-[87vh] z-50 overflow-auto no-scrollbar duration-500 w-[87%] md:w-[20vw] transition-all bg-gray-200 text-gray-600 dark:bg-gray-900 dark:text-gray-100 md:h-[90vh] md:relative absolute">
@@ -86,6 +123,12 @@ const User_sidebar = ({ setShowSideBar }) => {
             <>
               <div className="top text-xl font-bold p-3 flex items-center justify-between">
                 <span>Direct Messages</span>
+                <button
+                  onClick={onOpenPeople}
+                  className="text-xs px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  People
+                </button>
               </div>
               <div className="users flex flex-col gap-1">
                 <div>
@@ -119,21 +162,26 @@ const User_sidebar = ({ setShowSideBar }) => {
                     </div>
                   </div>
                 </div>
-                {user &&
-                  user.map((item) => (
+                {connectedUsers &&
+                  connectedUsers.map((item) => (
                     <User
                       setShowSideBar={setShowSideBar}
                       key={item.UserId}
                       user={item}
-                      isActive={
-                        location.pathname === `/dm/${item.UserId}`
-                      }
+                      isActive={location.pathname === `/dm/${item.UserId}`}
                     />
                   ))}
+                {connectedUsers.length === 0 && (
+                  <div className="text-sm text-gray-500 dark:text-gray-400 p-4">
+                    You have no connections yet. Click People to find and connect.
+                  </div>
+                )}
               </div>
             </>
-          ) : (
+          ) : activeTab === "groups" ? (
             <GroupsList setShowSideBar={setShowSideBar} />
+          ) : (
+            <Requests currentUser={currentUserDoc} />
           )}
         </div>
       </div>

@@ -8,6 +8,7 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 // importing custom hook for theme;
 import ThemeBtn from "../components/ThemeBtn";
+import RequestsDropdown from "@/components/User/RequestsDropdown";
 // Navigation Bar Component
 const Navbar = () => {
   const [user] = useAuthState(auth);
@@ -39,6 +40,7 @@ const Navbar = () => {
 
         <div className="flex gap-2 md:gap-6 items-center">
           <ThemeBtn />
+          {user && <RequestsDropdown />}
 
           {/* Login Section */}
           <div className="login flex items-center space-x-4">

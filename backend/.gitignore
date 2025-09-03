@@ -15,7 +15,7 @@ lerna-debug.log*
 .env.local
 .env.development
 .env.production
-
+serviceAccountKey.json
 # testing
 /coverage
 
