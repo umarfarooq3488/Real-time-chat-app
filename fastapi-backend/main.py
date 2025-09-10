@@ -5,6 +5,7 @@ from typing import List, Optional, Dict, Tuple
 from openai import OpenAI
 import os
 import re
+import logging
 from datetime import datetime, timezone
 import uvicorn
 import firebase_admin
@@ -23,6 +24,8 @@ from chatbot.core.config import settings
 
 # Load environment variables
 load_dotenv()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Initialize FastAPI
 app = FastAPI(
@@ -57,18 +60,29 @@ def get_openai_client():
 def get_firestore_client():
     try:
         if not firebase_admin._apps:
-            service_account_path = os.getenv("FIREBASE_SERVICE_ACCOUNT_KEY")
-            if service_account_path and os.path.exists(service_account_path):
-                cred = credentials.Certificate(service_account_path)
+            # Get the JSON content from the environment variable for deployment
+            firebase_creds_json_str = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
+            if firebase_creds_json_str:
+                firebase_creds_dict = json.loads(firebase_creds_json_str)
+                cred = credentials.Certificate(firebase_creds_dict)
                 firebase_admin.initialize_app(cred)
-                print("Firebase initialized")
+                logger.info("Firebase initialized successfully from environment variable.")
             else:
-                print("Firebase service account missing or invalid")
-                return None
-        return firestore.client()
+                # Fallback for local development (optional, but good practice)
+                local_key_path = "chat_serviceAccountKey.json"
+                if os.path.exists(local_key_path):
+                    cred = credentials.Certificate(local_key_path)
+                    firebase_admin.initialize_app(cred)
+                    logger.info(f"Firebase initialized successfully from local file: {local_key_path}")
+                else:
+                    raise ValueError("Firebase credentials not found in environment variable or local file.")
+
+        db = firestore.client()
     except Exception as e:
-        print(f"Firebase init error: {str(e)}")
-        return None
+        logger.error(f"CRITICAL: Failed to initialize Firebase: {e}")
+        db = None # Ensure db is defined even on failure
+    return db
+
 
 # Usage Limits
 DAILY_GROUP_LIMIT = 10
