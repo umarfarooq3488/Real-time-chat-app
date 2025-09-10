@@ -14,6 +14,7 @@ import {
 
 const ChatRoom = ({ scroll }) => {
   const [messages, setMessages] = useState([]);
+  const [botTyping, setBotTyping] = useState(false); // ⬅️ moved here
   const { chatType, selectedUserId } = useUser();
 
   useEffect(() => {
@@ -33,7 +34,7 @@ const ChatRoom = ({ scroll }) => {
           const fetchMessages = snapshot.docs.map((doc) => ({
             messageId: doc.id,
             ...doc.data(),
-          })); // Debug log
+          }));
           setMessages(fetchMessages.reverse());
         });
 
@@ -71,14 +72,35 @@ const ChatRoom = ({ scroll }) => {
   return (
     <>
       {chatType !== null ? (
-        <div>
-          <div className="dark:bg-gray-900 no-scrollbar w-[80vw] md:w-[77vw] bg-gray-200 gap-3 overflow-y-auto flex-col flex h-[74vh] xl:h-[80vh] p-2 py-10 md:p-7">
+        <div className="flex flex-col h-[calc(100vh-120px)] md:h-[calc(100vh-110px)] bg-gray-200 dark:bg-gray-900">
+          {/* Messages pane */}
+          <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar w-full gap-3 flex flex-col px-2 md:px-6 py-4">
             {messages.map((msg) => (
               <Message key={msg.messageId} id={msg.id} message={msg} />
             ))}
+
+            {/* 👇 Typing bubble appears like a message */}
+            {botTyping && (
+              <div className="flex w-full px-2 mb-2">
+                <div className="image flex-shrink-0 mr-3">
+                  <div className="w-8 h-8 rounded-full bg-gray-500" />
+                </div>
+                <div className="dark:bg-gray-700 bg-gray-800 text-white p-3 rounded-lg max-w-[70%]">
+                  <div className="flex items-center gap-2 text-xs text-gray-300 mb-1">
+                    <span className="font-bold text-teal-300">ExplainBot</span>
+                    <span>AI</span>
+                  </div>
+                  <div className="text-sm opacity-80">typing…</div>
+                </div>
+              </div>
+            )}
+
             <span ref={scroll}></span>
           </div>
-          <SendMessage scroll={scroll} />
+          {/* Input */}
+          <div className="w-full">
+            <SendMessage scroll={scroll} setBotTyping={setBotTyping} />
+          </div>
         </div>
       ) : (
         <div className="flex dark:bg-gray-900 bg-gray-200 justify-center h-[89vh] font-thin items-center text-4xl lg:text-8xl text-gray-400">

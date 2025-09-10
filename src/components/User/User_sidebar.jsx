@@ -20,7 +20,10 @@ import { auth } from "@/config/firebase";
 import PeopleList from "./PeopleList";
 import Requests from "./Requests";
 
-const User_sidebar = ({ setShowSideBar, onOpenPeople = () => console.warn("onOpenPeople not provided") }) => {
+const User_sidebar = ({
+  setShowSideBar,
+  onOpenPeople = () => console.warn("onOpenPeople not provided"),
+}) => {
   const [allUsers, setAllUsers] = useState([]);
   const [currentUserDoc, setCurrentUserDoc] = useState(null);
   const navigate = useNavigate();
@@ -28,7 +31,9 @@ const User_sidebar = ({ setShowSideBar, onOpenPeople = () => console.warn("onOpe
 
   // Determine initial tab from URL query (?tab=users|groups|requests)
   const searchParams = new URLSearchParams(location.search);
-  const initialTab = ["users", "groups", "requests"].includes(searchParams.get("tab"))
+  const initialTab = ["users", "groups", "requests"].includes(
+    searchParams.get("tab")
+  )
     ? searchParams.get("tab")
     : "users";
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -41,6 +46,15 @@ const User_sidebar = ({ setShowSideBar, onOpenPeople = () => console.warn("onOpe
       setActiveTab(tab);
     }
   }, [location.search]);
+
+  useEffect(() => {
+    // Auto-select tab based on current route
+    if (location.pathname.startsWith("/chat/")) {
+      if (activeTab !== "groups") setActiveTab("groups");
+    } else if (location.pathname.startsWith("/dm/")) {
+      if (activeTab !== "users") setActiveTab("users");
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     const q = query(
@@ -72,24 +86,26 @@ const User_sidebar = ({ setShowSideBar, onOpenPeople = () => console.warn("onOpe
     return () => unsubscribe();
   }, []);
 
-  const selectGroup = () => {
-    navigate("/chat/defaultPublicGroup");
-    setShowSideBar(false);
-  };
-
   const connectedUserIds = new Set(currentUserDoc?.connections || []);
   const connectedUsers = allUsers
     .filter((u) => u.userId && u.userId !== auth.currentUser?.uid)
     .filter((u) => connectedUserIds.has(u.userId));
 
-  const incomingCount = (currentUserDoc?.pendingIncoming || []).length;
-
   return (
-    <div className="h-[87vh] z-50 overflow-auto no-scrollbar duration-500 w-[87%] md:w-[20vw] transition-all bg-gray-200 text-gray-600 dark:bg-gray-900 dark:text-gray-100 md:h-[90vh] md:relative absolute">
-      <div className="cursor-pointer h-full border-r-4 p-3 border-gray-400">
-        <div className="box flex flex-col">
-          {/* Tabs */}
-          <div className="flex border-b border-gray-300 dark:border-gray-600 mb-4">
+    <div
+      className="
+        h-[87vh] md:h-[90vh] 
+        z-50 overflow-hidden
+        bg-gray-200 text-gray-600 dark:bg-gray-900 dark:text-gray-100
+        absolute md:relative
+        transition-all
+        w-full sm:w-[50vw] md:w-[28vw] lg:w-[22vw]
+      "
+    >
+      <div className="cursor-pointer h-full border-r border-gray-300 dark:border-gray-700 flex flex-col">
+        {/* Tabs - always visible */}
+        <div className="sticky top-0 z-20 bg-gray-200 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-600">
+          <div className="flex overflow-x-auto no-scrollbar min-w-[320px]">
             <button
               onClick={() => setActiveTab("users")}
               className={`flex-1 py-2 px-4 text-sm font-medium transition-colors ${
@@ -117,11 +133,13 @@ const User_sidebar = ({ setShowSideBar, onOpenPeople = () => console.warn("onOpe
               </div>
             </button>
           </div>
+        </div>
 
-          {/* Content based on active tab */}
+        {/* Content based on active tab */}
+        <div className="px-3 flex-1 overflow-y-auto no-scrollbar">
           {activeTab === "users" ? (
             <>
-              <div className="top text-xl font-bold p-3 flex items-center justify-between">
+              <div className="top text-xl font-bold md:p-4 flex items-center justify-between">
                 <span>Direct Messages</span>
                 <button
                   onClick={onOpenPeople}
@@ -131,37 +149,6 @@ const User_sidebar = ({ setShowSideBar, onOpenPeople = () => console.warn("onOpe
                 </button>
               </div>
               <div className="users flex flex-col gap-1">
-                <div>
-                  <div
-                    onClick={selectGroup}
-                    className={`box overflow-hidden flex gap-3 rounded-md p-4 transition-colors duration-200
-                      ${
-                        location.pathname.startsWith("/chat/") && !location.pathname.startsWith("/dm/")
-                          ? "bg-teal-700 dark:bg-teal-800 text-white"
-                          : "dark:hover:bg-gray-600 hover:bg-[#c4c4c4] dark:bg-gray-700 bg-gray-300"
-                      }`}
-                  >
-                    <img src={Groupdp} className="rounded-full w-12" alt="" />
-                    <div className="info flex flex-col">
-                      <h3
-                        className={`font-bold text-lg ${
-                          location.pathname.startsWith("/chat/") && !location.pathname.startsWith("/dm/") ? "text-white" : "dark:text-gray-100"
-                        }`}
-                      >
-                        Public Group
-                      </h3>
-                      <p
-                        className={`text-sm text-nowrap ${
-                          location.pathname.startsWith("/chat/") && !location.pathname.startsWith("/dm/")
-                            ? "text-gray-100"
-                            : "dark:text-gray-300"
-                        }`}
-                      >
-                        Anyone can see your messages
-                      </p>
-                    </div>
-                  </div>
-                </div>
                 {connectedUsers &&
                   connectedUsers.map((item) => (
                     <User
@@ -173,7 +160,8 @@ const User_sidebar = ({ setShowSideBar, onOpenPeople = () => console.warn("onOpe
                   ))}
                 {connectedUsers.length === 0 && (
                   <div className="text-sm text-gray-500 dark:text-gray-400 p-4">
-                    You have no connections yet. Click People to find and connect.
+                    You have no connections yet. Click People to find and
+                    connect.
                   </div>
                 )}
               </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { dataBase, auth } from "../config/firebase";
-import { collection, onSnapshot, query, orderBy, doc, getDoc } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, doc, getDoc, where } from "firebase/firestore";
 import { Users, Lock, Globe, Calendar, Plus, Share2, AlertCircle } from "lucide-react";
 import CreateGroup from "./CreateGroup";
 import { GroupInvite } from "./GroupInvite";
@@ -16,6 +16,7 @@ const GroupsList = ({ setShowSideBar }) => {
   const [selectedGroupId, setSelectedGroupId] = useState(null);
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [visibleUsersCount, setVisibleUsersCount] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -36,6 +37,15 @@ const GroupsList = ({ setShowSideBar }) => {
     };
 
     fetchUserJoinedGroups();
+  }, []);
+
+  // Count all visible users for public groups
+  useEffect(() => {
+    const q = query(collection(dataBase, "Users"), where("visible", "==", true));
+    const unsub = onSnapshot(q, (snapshot) => {
+      setVisibleUsersCount(snapshot.size);
+    });
+    return () => unsub();
   }, []);
 
   useEffect(() => {
@@ -89,7 +99,7 @@ const GroupsList = ({ setShowSideBar }) => {
 
   if (loading) {
     return (
-      <div className="h-[87vh] z-50 overflow-auto no-scrollbar duration-500 w-[87%] md:w-[20vw] transition-all bg-gray-200 text-gray-600 dark:bg-gray-900 dark:text-gray-100 md:h-[90vh] md:relative absolute">
+      <div className="h-[87vh] z-50 overflow-auto no-scrollbar duration-500 w-[100%] md:w-full transition-all bg-gray-200 text-gray-600 dark:bg-gray-900 dark:text-gray-100 md:h-[90vh] md:relative absolute">
         <div className="p-4">
           <div className="animate-pulse">
             <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
@@ -151,6 +161,7 @@ const GroupsList = ({ setShowSideBar }) => {
                 groups.map((group) => {
                   const isUserMember = userJoinedGroups.includes(group.id);
                   const isPrivateAndNotMember = group.visibility === "private" && !isUserMember;
+                  const displayMembers = group.visibility === "public" ? visibleUsersCount : getActualMemberCount(group);
                   
                   return (
                     <div
@@ -212,7 +223,7 @@ const GroupsList = ({ setShowSideBar }) => {
                                 location.pathname === `/chat/${group.id}` ? "text-gray-200" : "text-gray-500 dark:text-gray-400"
                               }
                             >
-                              {getActualMemberCount(group)} members
+                              {displayMembers} members
                             </span>
                           </div>
                           <div className="flex items-center gap-1">

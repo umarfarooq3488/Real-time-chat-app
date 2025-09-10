@@ -6,13 +6,32 @@ import { FiArrowDownRight } from "react-icons/fi";
 import { Bot, AtSign, FileText, Image, File } from "lucide-react";
 import FileViewer from "./FileViewer";
 
+const escapeHtml = (unsafe) => {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
+
+const formatTextToHtml = (text) => {
+  if (!text) return "";
+  // Escape HTML first
+  let html = escapeHtml(text);
+  // Bold double-asterisk segments: **bold**
+  html = html.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  // Preserve line breaks
+  html = html.replace(/\n/g, "<br/>");
+  return html;
+};
+
 const Message = ({ message, id }) => {
   const [user] = useAuthState(auth);
 
   const [copied, setCopied] = useState(false);
   const [deleteState, setDeleteState] = useState(false);
 
-  // format the date here
   const formattedDate = message.createAt
     ? new Date(message.createAt.seconds * 1000).toLocaleDateString()
     : "";
@@ -28,7 +47,7 @@ const Message = ({ message, id }) => {
     try {
       await navigator.clipboard.writeText(message.text);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy text: ", err);
     }
@@ -38,7 +57,6 @@ const Message = ({ message, id }) => {
     setDeleteState(true);
   };
 
-  // Function to render message type indicator
   const renderMessageType = () => {
     if (!message.type) return null;
 
@@ -59,7 +77,6 @@ const Message = ({ message, id }) => {
     );
   };
 
-  // Function to render mentions
   const renderMentions = () => {
     if (!message.mentions || message.mentions.length === 0) return null;
 
@@ -78,7 +95,6 @@ const Message = ({ message, id }) => {
     );
   };
 
-  // Function to render file information
   const renderFileInfo = () => {
     if (!message.file) return null;
 
@@ -141,20 +157,17 @@ const Message = ({ message, id }) => {
             </div>
           </div>
           {!deleteState ? (
-            <pre className="message whitespace-pre-wrap break-words font-sans text-sm sm:text-base leading-normal">
-              {message.text}
-            </pre>
+            <div
+              className="message whitespace-pre-wrap break-words font-sans text-sm sm:text-base leading-normal"
+              dangerouslySetInnerHTML={{ __html: formatTextToHtml(message.text) }}
+            />
           ) : (
             <span className="text-sm italic">This message was deleted</span>
           )}
           
-          {/* Render mentions */}
           {renderMentions()}
-          
-          {/* Render file information */}
           {renderFileInfo()}
-          
-          {/* Legacy file support */}
+
           {message.fileURL && !message.file && (
             <FileViewer fileURL={message.fileURL} fileType={message.fileType} />
           )}

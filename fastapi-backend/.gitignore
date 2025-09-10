@@ -48,3 +48,4 @@ backend/*.pem
 backend/*.p12
 serviceAccount*.json
 credentials*.json
+chat_serviceAccount*.json
