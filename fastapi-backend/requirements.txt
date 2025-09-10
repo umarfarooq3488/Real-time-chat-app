@@ -15,7 +15,6 @@ langchain-community>=0.0.20
 langchain-openai>=0.0.5
 
 # Vector store - CLEAN VERSIONS
-chromadb>=0.4.22
 pinecone>=3.0.0
 langchain-pinecone>=0.1.0
 
