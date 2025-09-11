@@ -276,17 +276,19 @@ const GroupsList = ({ setShowSideBar }) => {
                       </div>
 
                       {/* Invite Button - appears on hover */}
-                      <button
-                        onClick={(e) => handleInviteClick(e, group.id)}
-                        className={`absolute top-2 right-2 p-1.5 rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 ${
-                          location.pathname === `/chat/${group.id}`
-                            ? "bg-white/20 text-white hover:bg-white/30"
-                            : "bg-gray-600/20 text-gray-600 dark:text-gray-400 hover:bg-gray-600/30"
-                        }`}
-                        title="Invite to group"
-                      >
-                        <Share2 size={14} />
-                      </button>
+                      {group.createdBy == auth.currentUser.uid && (
+                        <button
+                          onClick={(e) => handleInviteClick(e, group.id)}
+                          className={`absolute top-2 right-2 p-1.5 rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 ${
+                            location.pathname === `/chat/${group.id}`
+                              ? "bg-white/20 text-white hover:bg-white/30"
+                              : "bg-gray-600/20 text-gray-600 dark:text-gray-400 hover:bg-gray-600/30"
+                          }`}
+                          title="Invite to group"
+                        >
+                          <Share2 size={14} />
+                        </button>
+                      )}
                     </div>
                   );
                 })
