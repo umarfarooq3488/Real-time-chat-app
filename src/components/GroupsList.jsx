@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { dataBase, auth } from "../config/firebase";
-import { collection, onSnapshot, query, orderBy, doc, getDoc, where } from "firebase/firestore";
-import { Users, Lock, Globe, Calendar, Plus, Share2, AlertCircle } from "lucide-react";
+import {
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+  doc,
+  getDoc,
+  where,
+} from "firebase/firestore";
+import {
+  Users,
+  Lock,
+  Globe,
+  Calendar,
+  Plus,
+  Share2,
+  AlertCircle,
+} from "lucide-react";
 import CreateGroup from "./CreateGroup";
 import { GroupInvite } from "./GroupInvite";
 import { getActualMemberCount } from "../lib/groupUtils";
@@ -25,7 +41,9 @@ const GroupsList = ({ setShowSideBar }) => {
     const fetchUserJoinedGroups = async () => {
       if (auth.currentUser) {
         try {
-          const userDoc = await getDoc(doc(dataBase, "Users", auth.currentUser.uid));
+          const userDoc = await getDoc(
+            doc(dataBase, "Users", auth.currentUser.uid)
+          );
           if (userDoc.exists()) {
             const userData = userDoc.data();
             setUserJoinedGroups(userData.groupsJoined || []);
@@ -41,7 +59,10 @@ const GroupsList = ({ setShowSideBar }) => {
 
   // Count all visible users for public groups
   useEffect(() => {
-    const q = query(collection(dataBase, "Users"), where("visible", "==", true));
+    const q = query(
+      collection(dataBase, "Users"),
+      where("visible", "==", true)
+    );
     const unsub = onSnapshot(q, (snapshot) => {
       setVisibleUsersCount(snapshot.size);
     });
@@ -68,18 +89,20 @@ const GroupsList = ({ setShowSideBar }) => {
 
   const selectGroup = (groupId) => {
     // Find the group to check if it's private
-    const selectedGroup = groups.find(group => group.id === groupId);
-    
+    const selectedGroup = groups.find((group) => group.id === groupId);
+
     // If group is private, check if user is a member
     if (selectedGroup && selectedGroup.visibility === "private") {
       if (!userJoinedGroups.includes(groupId)) {
-        setErrorMessage("You need to join this private group first to access it.");
+        setErrorMessage(
+          "You need to join this private group first to access it."
+        );
         setShowError(true);
         setTimeout(() => setShowError(false), 3000);
         return;
       }
     }
-    
+
     // Allow access if it's public or user is a member of private group
     navigate(`/chat/${groupId}`);
     setShowSideBar(false);
@@ -121,8 +144,8 @@ const GroupsList = ({ setShowSideBar }) => {
         </div>
       )}
 
-      <div className="h-[87vh] z-50 overflow-auto no-scrollbar duration-500 w-[87%] md:w-[20vw] transition-all bg-gray-200 text-gray-600 dark:bg-gray-900 dark:text-gray-100 md:h-[90vh] md:relative absolute">
-        <div className="cursor-pointer h-full border-r-4 p-3 border-gray-400">
+      <div className="h-[87vh] z-50 overflow-auto no-scrollbar duration-500 w-[96%] md:w-[20vw] transition-all bg-gray-200 text-gray-600 dark:bg-gray-900 dark:text-gray-100 md:h-[90vh] md:relative absolute">
+        <div className="cursor-pointer h-full p-3 border-gray-400">
           <div className="box flex flex-col">
             {/* Header with Create Group Button */}
             <div className="top text-xl font-bold p-3 flex items-center justify-between">
@@ -135,7 +158,7 @@ const GroupsList = ({ setShowSideBar }) => {
                 <Plus size={16} />
               </button>
             </div>
-            
+
             {/* Groups List */}
             <div className="groups flex flex-col gap-2">
               {groups.length === 0 ? (
@@ -146,7 +169,8 @@ const GroupsList = ({ setShowSideBar }) => {
                       No Groups Yet
                     </h3>
                     <p className="text-gray-500 dark:text-gray-400 mb-4">
-                      Create your first group to start collaborating with others!
+                      Create your first group to start collaborating with
+                      others!
                     </p>
                     <button
                       onClick={() => setShowCreateGroup(true)}
@@ -160,9 +184,13 @@ const GroupsList = ({ setShowSideBar }) => {
               ) : (
                 groups.map((group) => {
                   const isUserMember = userJoinedGroups.includes(group.id);
-                  const isPrivateAndNotMember = group.visibility === "private" && !isUserMember;
-                  const displayMembers = group.visibility === "public" ? visibleUsersCount : getActualMemberCount(group);
-                  
+                  const isPrivateAndNotMember =
+                    group.visibility === "private" && !isUserMember;
+                  const displayMembers =
+                    group.visibility === "public"
+                      ? visibleUsersCount
+                      : getActualMemberCount(group);
+
                   return (
                     <div
                       key={group.id}
@@ -189,7 +217,9 @@ const GroupsList = ({ setShowSideBar }) => {
                         <div className="flex items-center gap-2 mb-1">
                           <h3
                             className={`font-bold text-lg truncate ${
-                              location.pathname === `/chat/${group.id}` ? "text-white" : "dark:text-gray-100"
+                              location.pathname === `/chat/${group.id}`
+                                ? "text-white"
+                                : "dark:text-gray-100"
                             }`}
                           >
                             {group.name}
@@ -203,7 +233,9 @@ const GroupsList = ({ setShowSideBar }) => {
                                 : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                             }`}
                           >
-                            {group.visibility === "private" && !isUserMember ? "Join Required" : group.visibility}
+                            {group.visibility === "private" && !isUserMember
+                              ? "Join Required"
+                              : group.visibility}
                           </span>
                         </div>
                         <p
@@ -220,7 +252,9 @@ const GroupsList = ({ setShowSideBar }) => {
                             <Users size={12} />
                             <span
                               className={
-                                location.pathname === `/chat/${group.id}` ? "text-gray-200" : "text-gray-500 dark:text-gray-400"
+                                location.pathname === `/chat/${group.id}`
+                                  ? "text-gray-200"
+                                  : "text-gray-500 dark:text-gray-400"
                               }
                             >
                               {displayMembers} members
@@ -230,7 +264,9 @@ const GroupsList = ({ setShowSideBar }) => {
                             <Calendar size={12} />
                             <span
                               className={
-                                location.pathname === `/chat/${group.id}` ? "text-gray-200" : "text-gray-500 dark:text-gray-400"
+                                location.pathname === `/chat/${group.id}`
+                                  ? "text-gray-200"
+                                  : "text-gray-500 dark:text-gray-400"
                               }
                             >
                               {formatDate(group.createdAt)}
@@ -238,7 +274,7 @@ const GroupsList = ({ setShowSideBar }) => {
                           </div>
                         </div>
                       </div>
-                      
+
                       {/* Invite Button - appears on hover */}
                       <button
                         onClick={(e) => handleInviteClick(e, group.id)}
@@ -280,4 +316,4 @@ const GroupsList = ({ setShowSideBar }) => {
   );
 };
 
-export default GroupsList; 
+export default GroupsList;

@@ -98,14 +98,13 @@ const User_sidebar = ({
         z-50 overflow-hidden
         bg-gray-200 text-gray-600 dark:bg-gray-900 dark:text-gray-100
         absolute md:relative
-        transition-all
-        w-full sm:w-[50vw] md:w-[28vw] lg:w-[22vw]
+        transition-all sm:w-[50vw] md:w-[28vw] lg:w-[22vw]
       "
     >
       <div className="cursor-pointer h-full border-r border-gray-300 dark:border-gray-700 flex flex-col">
         {/* Tabs - always visible */}
         <div className="sticky top-0 z-20 bg-gray-200 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-600">
-          <div className="flex overflow-x-auto no-scrollbar min-w-[320px]">
+          <div className="flex no-scrollbar min-w-[340px]">
             <button
               onClick={() => setActiveTab("users")}
               className={`flex-1 py-2 px-4 text-sm font-medium transition-colors ${
@@ -136,7 +135,7 @@ const User_sidebar = ({
         </div>
 
         {/* Content based on active tab */}
-        <div className="px-3 flex-1 overflow-y-auto no-scrollbar">
+        <div className="p-3 flex-1 overflow-y-auto no-scrollbar">
           {activeTab === "users" ? (
             <>
               <div className="top text-xl font-bold md:p-4 flex items-center justify-between">
@@ -148,7 +147,7 @@ const User_sidebar = ({
                   People
                 </button>
               </div>
-              <div className="users flex flex-col gap-1">
+              <div className="users py-4 flex flex-col gap-1">
                 {connectedUsers &&
                   connectedUsers.map((item) => (
                     <User
