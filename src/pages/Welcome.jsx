@@ -85,10 +85,10 @@ const Welcome = () => {
               </div>
               <div className="bg-white/80 dark:bg-slate-800/50 p-4 rounded-xl backdrop-blur-sm border border-gray-200 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/70 transition">
                 <h3 className="text-indigo-600 dark:text-indigo-400 font-semibold mb-2">
-                  Easy Sharing
+                  AI Supported Chats
                 </h3>
                 <p className="text-gray-600 dark:text-slate-300 text-sm">
-                  Share media with a single tap
+                  Use the build In AI features within the chats
                 </p>
               </div>
             </div>
