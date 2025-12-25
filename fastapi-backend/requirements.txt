@@ -1,24 +1,34 @@
+# Web framework
 fastapi
 uvicorn[standard]
-openai
-python-multipart
-pydantic
+
+# Environment & uploads
 python-dotenv
+python-multipart
+
+# Pydantic (EXPLICIT v2 SETUP)
+pydantic>=2.0,<3.0
+pydantic-settings
+
+# OpenAI
+openai
+
+# Firebase & system utils
 firebase-admin
 cachetools
 psutil
 
-# LangChain - Let pip resolve compatible versions
+# LangChain (LOCKED & COMPATIBLE)
 langchain==0.1.16
-langchain-core
-langchain-community
-langchain-openai
+langchain-core==0.1.48
+langchain-community==0.0.32
+langchain-openai==0.0.8
 
 # Vector store
-pinecone
+pinecone-client
 langchain-pinecone
 
-# Document loaders dependencies
+# Document loaders
 pypdf
 unstructured
 python-docx
