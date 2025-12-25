@@ -9,7 +9,7 @@ cachetools
 psutil
 
 # LangChain - Let pip resolve compatible versions
-langchain
+langchain==0.1.16
 langchain-core
 langchain-community
 langchain-openai
