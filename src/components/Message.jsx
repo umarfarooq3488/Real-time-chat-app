@@ -167,6 +167,10 @@ const Message = ({ message, id }) => {
           
           {renderMentions()}
           {renderFileInfo()}
+          
+          {message.file?.url && (
+            <FileViewer fileURL={message.file.url} fileType={message.file.type} />
+          )}
 
           {message.fileURL && !message.file && (
             <FileViewer fileURL={message.fileURL} fileType={message.fileType} />

@@ -3,7 +3,14 @@ import axios from "axios";
 export const FileUploader = async (file) => {
     if (!file) return null;
 
-    const CLOUD_NAME = import.meta.env.CLOUD_NAME;
+    const CLOUD_NAME = import.meta.env.VITE_CLOUD_NAME;
+
+    if (!CLOUD_NAME) {
+        console.error("VITE_CLOUD_NAME environment variable is not set. Please check your .env file.");
+        console.error("Make sure your .env file contains: VITE_CLOUD_NAME=your_cloud_name");
+        return null;
+    }
+
     const UPLOAD_PRESET = "chat_upload";
 
     const formData = new FormData();
@@ -30,6 +37,9 @@ export const FileUploader = async (file) => {
 
     } catch (error) {
         console.error("Error uploading file:", error.response?.data || error.message);
+        if (error.response?.status === 400) {
+            console.error("Cloudinary upload failed. Check your upload preset and cloud name configuration.");
+        }
         return null;
     }
 };

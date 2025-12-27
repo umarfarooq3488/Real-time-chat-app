@@ -53,6 +53,17 @@ const SendMessage = ({ scroll, setBotTyping }) => {
     try {
       const { displayName, uid, photoURL } = auth.currentUser;
 
+      // If there's a file selected but no URL yet, upload it first
+      let fileUrl = FileDownloadUrl;
+      if (selectedFile && !fileUrl) {
+        fileUrl = await FileUploader(selectedFile);
+        if (!fileUrl) {
+          alert("Failed to upload file. Please try again.");
+          return;
+        }
+        setFileDownloadUrl(fileUrl);
+      }
+
       const mentions = extractMentions(message);
       const messageType = getMessageType(message, !!selectedFile);
 
@@ -64,12 +75,12 @@ const SendMessage = ({ scroll, setBotTyping }) => {
         id: uid,
         type: messageType,
         mentions: mentions,
-        ...(selectedFile && {
+        ...(selectedFile && fileUrl && {
           file: {
             name: selectedFile.name,
             type: selectedFile.type,
             size: selectedFile.size,
-            url: FileDownloadUrl,
+            url: fileUrl,
           },
         }),
       };
