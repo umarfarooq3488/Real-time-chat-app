@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Document Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test Document Upload Endpoint</h1>
+    
+    <div class="form-group">
+        <label for="apiUrl">API Base URL:</label>
+        <input type="text" id="apiUrl" value="https://real-time-chat-app-production-2385.up.railway.app" placeholder="Enter API base URL">
+    </div>
+    
+    <div class="form-group">
+        <label for="groupId">Group ID:</label>
+        <input type="text" id="groupId" value="vQIgxjK3fjs8oSPLW5hb" placeholder="Enter group ID">
+    </div>
+    
+    <div class="form-group">
+        <label for="fileInput">Select File:</label>
+        <input type="file" id="fileInput" accept=".pdf,.txt,.csv,.doc,.docx,.ppt,.pptx">
+    </div>
+    
+    <button id="uploadBtn" onclick="uploadFile()">Upload File</button>
+    
+    <div id="result"></div>
+
+    <script>
+        async function uploadFile() {
+            const apiUrl = document.getElementById('apiUrl').value.trim();
+            const groupId = document.getElementById('groupId').value.trim();
+            const fileInput = document.getElementById('fileInput');
+            const resultDiv = document.getElementById('result');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            if (!apiUrl || !groupId) {
+                resultDiv.className = 'error';
+                resultDiv.textContent = 'Please fill in API URL and Group ID';
+                return;
+            }
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                resultDiv.className = 'error';
+                resultDiv.textContent = 'Please select a file';
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Uploading...';
+            resultDiv.className = 'info';
+            resultDiv.textContent = `Uploading ${file.name}...\nSize: ${(file.size / 1024).toFixed(2)} KB`;
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const url = `${apiUrl}/rag/knowledge-base/upload?group_id=${encodeURIComponent(groupId)}`;
+                console.log('Uploading to:', url);
+                console.log('File:', file.name, file.type, file.size);
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: formData
+                    // Don't set Content-Type - browser will set it with boundary
+                });
+                
+                const responseText = await response.text();
+                console.log('Response status:', response.status);
+                console.log('Response text:', responseText);
+                
+                if (!response.ok) {
+                    let errorDetail = responseText;
+                    try {
+                        const errorJson = JSON.parse(responseText);
+                        errorDetail = JSON.stringify(errorJson, null, 2);
+                    } catch (e) {
+                        // Not JSON, use as is
+                    }
+                    
+                    resultDiv.className = 'error';
+                    resultDiv.textContent = `Upload Failed (${response.status})\n\n${errorDetail}`;
+                    return;
+                }
+                
+                const result = JSON.parse(responseText);
+                resultDiv.className = 'success';
+                resultDiv.textContent = `Upload Successful!\n\n` +
+                    `Filename: ${result.filename}\n` +
+                    `File Type: ${result.file_type}\n` +
+                    `Chunk Count: ${result.chunk_count}\n` +
+                    `Status: ${result.status}\n\n` +
+                    `Full Response:\n${JSON.stringify(result, null, 2)}`;
+                
+            } catch (error) {
+                resultDiv.className = 'error';
+                resultDiv.textContent = `Error: ${error.message}\n\n${error.stack}`;
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'Upload File';
+            }
+        }
+    </script>
+</body>
+</html>
+

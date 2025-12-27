@@ -140,19 +140,28 @@ const GroupChat = () => {
       const api = import.meta.env.VITE_BOT_API_URL || "http://localhost:8000";
       const form = new FormData();
       form.append("file", uploadFile);
-      const res = await fetch(`${api}/rag/upload?group_id=${encodeURIComponent(groupId)}`, {
+      // Use the correct endpoint path: /rag/knowledge-base/upload
+      const res = await fetch(`${api}/rag/knowledge-base/upload?group_id=${encodeURIComponent(groupId)}`, {
         method: "POST",
         body: form
+        // Don't set Content-Type header - let the browser set it with boundary for multipart/form-data
       });
       if (!res.ok) {
         const text = await res.text().catch(() => "");
-        throw new Error(`Upload failed: ${res.status} ${text}`);
+        let errorMsg = `Upload failed: ${res.status}`;
+        try {
+          const errorJson = JSON.parse(text);
+          errorMsg += ` - ${errorJson.detail || text}`;
+        } catch {
+          errorMsg += ` - ${text}`;
+        }
+        throw new Error(errorMsg);
       }
       const json = await res.json();
       setUploadMsg(`Uploaded: ${json.filename} (${json.chunk_count} chunks)`);
-      setTimeout(() => { setUploadOpen(false); }, 800);
+      setTimeout(() => { setUploadOpen(false); }, 2000);
     } catch (e) {
-      console.error(e);
+      console.error("Upload error:", e);
       setUploadMsg(String(e.message || e));
     } finally {
       setUploading(false);
