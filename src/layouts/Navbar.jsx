@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import GoogleImg from "../assets/Google.png";
 import { auth } from "../config/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 // import icons
 
 // importing custom hook for theme;
@@ -17,10 +17,7 @@ const Navbar = () => {
 
   const GoogleSignIn = () => {
     const googleProvider = new GoogleAuthProvider();
-    // Use redirect instead of popup for better mobile/wrapper app compatibility
-    signInWithRedirect(auth, googleProvider);
-    // User will be redirected to Google, then back to the app
-    // The redirect result will be handled by AuthRedirect component
+    signInWithPopup(auth, googleProvider);
   };
 
   const logout = () => {

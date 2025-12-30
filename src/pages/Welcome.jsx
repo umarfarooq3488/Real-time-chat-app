@@ -7,7 +7,7 @@ import BackgroundImg from "../assets/background.jpeg";
 import linklineLogo from "../assets/linkline_logo.png";
 import linklinefav from "../assets/linkline_fav.png";
 import { auth } from "../config/firebase";
-import { GoogleAuthProvider, signInWithRedirect } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { MessageCircle, ArrowRight } from "lucide-react";
 import { useGuest } from "@/context/GuestUserContext";
 
@@ -18,10 +18,9 @@ const Welcome = () => {
   const signInGoogle = async () => {
     const provide = new GoogleAuthProvider();
     try {
-      // Use redirect instead of popup for better mobile/wrapper app compatibility
-      await signInWithRedirect(auth, provide);
-      // User will be redirected to Google, then back to the app
-      // The redirect result will be handled by AuthRedirect component
+      await signInWithPopup(auth, provide);
+      // The redirect will be handled by the PrivateRoute component
+      // No need to manually navigate here
     } catch (error) {
       console.error("Sign in error:", error);
     }
